@@ -18,7 +18,7 @@
     <div id="app3"></div>
 
     <script>
-        window.QuickFilterTable.renderApp('app1', {
+        QuickFilterTable.renderApp('app1', {
             items: [
                 { name: 'Alice', age: 30, city: 'New York' },
                 { name: 'Bob', age: 25, city: 'Los Angeles' },
@@ -43,7 +43,7 @@
             ]
         })
 
-        window.QuickFilterTable.renderApp('app2', {
+        QuickFilterTable.renderApp('app2', {
             items_url: '/podcast.json',
             headers: [
                 { text: 'Title', value: 'title' },
@@ -60,7 +60,7 @@
             }
         })
 
-        window.QuickFilterTable.renderApp('app3', {
+        QuickFilterTable.renderApp('app3', {
             items_url: '/podcast_full.json',
             items_key: 'rss.channel.item',
             headers: [
