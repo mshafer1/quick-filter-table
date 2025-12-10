@@ -1,0 +1,6 @@
+[x] Support passing in a URL or path or data
+[x] Render a table
+[x] Option to turn off the filter
+[ ] Support specifying a sub-data-path in that data URL (.rss.feed.item)
+[ ] Switch icons to Google Material
+[ ] Use BootStrap for styling

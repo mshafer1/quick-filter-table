@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test quick filter table</title>
+    <!-- Load Vue first -->
+    <link href="https://unpkg.com/vue3-easy-data-table/dist/style.css" rel="stylesheet">
+    <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+    <script src="https://unpkg.com/vue3-easy-data-table"></script>
+    <!-- Load your library -->
+    <script src="http://localhost:8000/library.js"></script>
+</head>
+
+<body>
+    <div id="app1"></div>
+
+    <div id="app2"></div>
+
+    <script>
+        window.QuickFilterTable.renderApp('app1', {
+            items: [
+                { name: 'Alice', age: 30, city: 'New York' },
+                { name: 'Bob', age: 25, city: 'Los Angeles' },
+                { name: 'Charlie', age: 35, city: 'Chicago' },
+                { name: 'David', age: 28, city: 'Miami' },
+                { name: 'Eve', age: 22, city: 'Seattle' }
+            ],
+            headers: [
+                { text: 'Name', value: 'name' },
+                { text: 'Age', value: 'age' },
+                { text: 'City', value: 'city' }
+            ]
+        })
+
+        window.QuickFilterTable.renderApp('app2', {
+            itemsUrl: '/podcast.json',
+            headers: [
+                { text: 'Title', value: 'title' },
+                { text: 'Description', value: 'description' },
+                { text: 'Link', value: 'link', sortable: false }
+            ]
+        })
+    </script>
+</body>
+
+</html>
