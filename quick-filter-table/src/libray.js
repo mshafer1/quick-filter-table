@@ -31,6 +31,21 @@ function renderApp(targetId, propsData = {}) {
     }
   })
 
+  const getNestedValue = (data, path) => {
+    // from Gemini
+    // 1. Split the path string into an array of keys (e.g., ['rss', 'channel', 'item']).
+    const pathKeys = path.split('.')
+
+    // 2. Use reduce to iterate over the keys.
+    return pathKeys.reduce((acc, key) => {
+      // acc is the accumulated value (the current object being inspected).
+
+      // Check if the current accumulator is null/undefined or if the key doesn't exist.
+      // The conditional chaining operator (?.) ensures we stop immediately if a property is missing.
+      return acc?.[key]
+    }, data) // Start the accumulator with the entire data object.
+  }
+
   if (!targetElement) {
     console.error(`Target element with ID "${targetId}" not found.`)
     return
@@ -61,10 +76,14 @@ function renderApp(targetId, propsData = {}) {
         axios
           .get(this.items_url)
           .then((response) => {
+            var data = response.data
+            if (propsData.items_key != undefined) {
+              data = getNestedValue(data, propsData.items_key)
+            }
             if (propsData.items_map != undefined) {
-              this.items = response.data.map(propsData.items_map)
+              this.items = data.map(propsData.items_map)
             } else {
-              this.items = response.data
+              this.items = data
             }
             this.loaded = true
           })
