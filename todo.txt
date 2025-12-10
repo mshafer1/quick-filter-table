@@ -4,3 +4,4 @@
 [x] Support specifying a sub-data-path in that data URL (.rss.feed.item)
 [ ] Switch icons to Google Material
 [x] Use BootStrap for styling
+[ ] publish
