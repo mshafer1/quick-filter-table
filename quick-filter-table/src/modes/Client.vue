@@ -3,22 +3,21 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
 </script>
 
 <template>
-    <div class="TODO" style="position: relative; width: 100%;">
+    <div class="TODO" style="position: relative; width: 100%; padding-top: 20px; padding-bottom: 100px;">
         <div v-if="!loaded" style="text-align: center; padding: 20px;">
             Loading...
         </div>
         <div v-else>
             <div>
                 <input ref="search" type="text" v-model="searchValue" @input="update_search" @focus="focusChanged"
-                    @blur="focusChanged" :class="{ 'focused': searchFocused }" placeholder="Search..."
-                    style="z-index: 10;" />
+                    @blur="focusChanged" :class="{ 'focused': searchFocused }" placeholder="Search..." />
                 <label v-if="searchValue" @click="clear_search" for="search"
                     style="position: absolute; top: 12px; right: 24px; z-index: 99;">
                     x
                 </label>
             </div>
-            <Vue3EasyDataTable :headers="used_headers" :items="working_items" table-class-name="customize-table"
-                alternating>
+            <Vue3EasyDataTable buttons-pagination :headers="used_headers" :items="working_items"
+                :rows-per-page="default_rows_per_page" table-class-name="customize-table" alternating>
             </Vue3EasyDataTable>
         </div>
     </div>
@@ -33,7 +32,7 @@ export default {
     components: {
         Vue3EasyDataTable,
     },
-    props: ['headers', 'items', "loaded"],
+    props: ['headers', 'items', "loaded", 'default_rows_per_page'],
     data: function () {
         return {
             working_items: this.items,

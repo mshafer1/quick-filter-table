@@ -112,17 +112,15 @@ function renderApp(targetId, propsData = {}) {
     }
   }
 
-  // Create a minimal root component instance that wraps your main component
   const RootWrapper = {
-    // Set a template to use your main component and pass props
-    template: `<ClientMode :headers="headers" :items="items" :loaded="loaded" />`,
+    template: `<ClientMode :headers="headers" :items="items" :loaded="loaded" :default_rows_per_page="default_rows_per_page" />`,
     components: { ClientMode },
     data() {
       return {
-        // Pass the received props to the root component
         headers: headers,
         items: propsData.items || [],
         itemsUrl: propsData.itemsUrl || null,
+        default_rows_per_page: propsData.default_rows_per_page || 10,
         loaded: false,
       }
     },
