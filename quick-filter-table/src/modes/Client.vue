@@ -18,7 +18,11 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
                 </div>
             </div>
             <Vue3EasyDataTable buttons-pagination :headers="used_headers" :items="working_items"
-                :rows-per-page="default_rows_per_page" table-class-name="customize-table" alternating>
+                :rows-per-page="default_rows_per_page" table-class-name="customize-table" alternating
+                :slotNames="html_slots">
+                <template v-for="(field, index) in html_slots" v-slot:[`item-${field}`]="item">
+                    <span v-html="item[field]"></span>
+                </template>
             </Vue3EasyDataTable>
         </div>
     </div>
@@ -48,6 +52,11 @@ export default {
         }
     },
     mounted: function () {
+    },
+    computed: {
+        html_slots() {
+            return this.used_headers.filter(h => h.html == true).map(h => h.value);
+        }
     },
     created() {
         console.log('QuickFilterTable app created.')

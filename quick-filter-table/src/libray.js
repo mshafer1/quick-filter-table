@@ -26,6 +26,8 @@ function renderApp(targetId, propsData = {}) {
       ...header,
       // explicitly checking for undefined to allow `false` values
       sortable: header.sortable !== undefined ? header.sortable : true,
+      // if html is explicitly set to true, use it; otherwise default to false
+      html: header.html === true ? true : false,
     }
   })
 
@@ -35,8 +37,8 @@ function renderApp(targetId, propsData = {}) {
   }
 
   if (propsData.items == null) {
-    if (propsData.itemsUrl == null) {
-      console.error('QuickFilterTable: itemsUrl or items is required.')
+    if (propsData.items_url == null) {
+      console.error('QuickFilterTable: items_url or items is required.')
       return
     }
   }
@@ -48,18 +50,22 @@ function renderApp(targetId, propsData = {}) {
       return {
         headers: headers,
         items: propsData.items || [],
-        itemsUrl: propsData.itemsUrl || null,
+        items_url: propsData.items_url || null,
         default_rows_per_page: propsData.default_rows_per_page || 10,
         loaded: false,
       }
     },
     mounted() {
-      if (this.itemsUrl != null) {
-        console.log('Fetching items from URL:', this.itemsUrl)
+      if (this.items_url != null) {
+        console.log('Fetching items from URL:', this.items_url)
         axios
-          .get(this.itemsUrl)
+          .get(this.items_url)
           .then((response) => {
-            this.items = response.data
+            if (propsData.items_map != undefined) {
+              this.items = response.data.map(propsData.items_map)
+            } else {
+              this.items = response.data
+            }
             this.loaded = true
           })
           .catch((error) => {

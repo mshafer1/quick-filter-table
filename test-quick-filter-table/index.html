@@ -42,13 +42,20 @@
         })
 
         window.QuickFilterTable.renderApp('app2', {
-            itemsUrl: '/podcast.json',
+            items_url: '/podcast.json',
             headers: [
                 { text: 'Title', value: 'title' },
-                { text: 'Description', value: 'description' },
-                { text: 'Link', value: 'link', sortable: false }
+                { text: 'Description', value: 'description', html: true },
+                { text: 'Link', value: 'link', sortable: false, html: true }
             ],
             default_rows_per_page: 50,
+            items_map: function (item) {
+                return {
+                    title: item.title,
+                    description: item.description,
+                    link: `<a href="${item.link}" target="_blank">Listen</a>`
+                }
+            }
         })
     </script>
 </body>
