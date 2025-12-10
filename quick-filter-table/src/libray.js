@@ -2,84 +2,13 @@ import ClientVue from './modes/Client.vue'
 
 export const QuickFilterTable = ClientVue
 
-// QuickFilterTable.initializeQuickFilterTable = (data) => {
-//   console.log('Initializing QuickFilterTable with data:', data)
-//   const { targetId, headers } = data // required fields
-//   const itemsUrl = data.itemsUrl || null // optional field
-//   const itemsPassed = data.items || [] // optional field
-//   console.log('itemsUrl:', itemsUrl)
-//   console.log('items:', itemsPassed)
-//   if (!itemsUrl && itemsPassed.length === 0) {
-//     console.error('QuickFilterTable: itemsUrl or items is required.')
-//     return
-//   }
-//   const { createApp } = window.Vue
-//   const { QuickFilterTable } = window.QuickFilterTable
-
-//   const app = createApp({
-//     template: ` <div>
-//       <h1>{{ message }}</h1>
-//       <p>Current count: {{ count }}</p>
-//       <button @click="count++">Increment</button>
-//       <QuickFilterTable :headers="headers" :datum="items" />
-//       <div>{{ items }}</div>
-//     </div>`,
-//     data() {
-//       return {
-//         message: 'Hello from QuickFilterTable!',
-//         count: 0,
-//         headers: headers,
-//         items: itemsPassed,
-//       }
-//     },
-//     components: {
-//       QuickFilterTable,
-//     },
-//     mounted() {
-//       if (itemsUrl != null) this.fetchItems()
-//     },
-//     methods: {
-//       fetchItems() {
-//         console.log('Fetching items from URL:', this.itemsUrl)
-//         fetch(itemsUrl)
-//           .then((response) => response.json())
-//           .then((data) => {
-//             this.items = data
-//           })
-//           .catch((error) => {
-//             console.error('Error fetching items:', error)
-//           })
-//       },
-//       // clicked
-//     },
-//   })
-
-//   app.mount(`#${targetId}`)
-// }
-// QuickFilterTable.mount = (targetId, data) => {
-//   const { createApp } = window.Vue
-//   const app = createApp(ClientVue, {
-//     targetId,
-//     headers: data.headers,
-//     itemsUrl: data.itemsUrl || null,
-//     items: data.items || [],
-//     template: ` <div>
-//       <h1>{{ message }}</h1>
-//       <p>Current count: {{ count }}</p>
-//       <button @click="count++">Increment</button>
-//       <QuickFilterTable :headers="headers" :datum="items" />
-//       <div>{{ items }}</div>
-//     </div>`,
-//   })
-//   app.mount(`#${targetId}`)
-// }
-
-// Import all necessary parts of Vue and your components
 import { createApp, onMounted } from 'vue'
 import axios from 'axios'
 import ClientMode from './modes/Client.vue'
 import VueEasyDataTable from 'vue3-easy-data-table'
 import 'vue3-easy-data-table/dist/style.css' // Don't forget the CSS!
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap'
 
 /**
  * The main function exposed to the global scope by the CDN library.

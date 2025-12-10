@@ -24,7 +24,7 @@ export default defineConfig({
     lib: {
       entry: fileURLToPath(new URL('./src/libray.js', import.meta.url)),
       name: 'QuickFilterTable',
-      fileName: (format) => `library.js`,
+      fileName: (format) => `quick-filter-table.js`,
     },
     rollupOptions: {
       output: {

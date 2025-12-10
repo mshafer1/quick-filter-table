@@ -3,18 +3,19 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
 </script>
 
 <template>
-    <div class="TODO" style="position: relative; width: 100%; padding-top: 20px; padding-bottom: 100px;">
+    <div class="" style="position: relative; width: 100%; padding-top: 20px; padding-bottom: 100px;">
         <div v-if="!loaded" style="text-align: center; padding: 20px;">
             Loading...
         </div>
-        <div v-else>
-            <div>
-                <input ref="search" type="text" v-model="searchValue" @input="update_search" @focus="focusChanged"
-                    @blur="focusChanged" :class="{ 'focused': searchFocused }" placeholder="Search..." />
-                <label v-if="searchValue" @click="clear_search" for="search"
-                    style="position: absolute; top: 12px; right: 24px; z-index: 99;">
-                    x
-                </label>
+        <div v-else class="mx-3 my-1">
+            <div class="input-group mt-3 mb-1">
+                <input name="search" class="form-control" ref="search" type="text" v-model="searchValue"
+                    @input="update_search" @focus="focusChanged" @blur="focusChanged"
+                    :class="{ 'focused': searchFocused }" placeholder="Search..." />
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-primary" v-if="searchValue" @click="clear_search"
+                        for="search">&times;</button>
+                </div>
             </div>
             <Vue3EasyDataTable buttons-pagination :headers="used_headers" :items="working_items"
                 :rows-per-page="default_rows_per_page" table-class-name="customize-table" alternating>
@@ -26,6 +27,9 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
 <script>
 import { fuzzyFilter } from "fuzzbunny";
 import debounce from 'lodash/debounce';
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import 'vue3-easy-data-table/dist/style.css';
 
 export default {
     name: 'ClientMode',
