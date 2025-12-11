@@ -19,17 +19,18 @@ jobs:
           - 24.x
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
-    # defaults:
-    #   run:
-    #     working-directory: $GITHUB_WORKSPACE/quick-filter-table
+    defaults:
+      run:
+        working-directory: $GITHUB_WORKSPACE/quick-filter-table
 
     steps:
       - uses: actions/checkout@v4
-      # - name: Use Node.js ${{ matrix.node-version }}
-      #   uses: actions/setup-node@v6.1.0
-      #   with:
-      #     node-version: ${{ matrix.node-version }}
-      #     cache: "npm"
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v6.1.0
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: quick-filter-table/package-lock.json
       - name: List directory
         run: |
           ls -la
