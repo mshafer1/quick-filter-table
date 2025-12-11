@@ -21,7 +21,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./quick-filter-table
+        working-directory: $GITHUB_WORKSPACE/quick-filter-table
 
     steps:
       - uses: actions/checkout@v4
