@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       # - name: Use Node.js ${{ matrix.node-version }}
-      #   uses: actions/setup-node@v4
+      #   uses: actions/setup-node@v6.1.0
       #   with:
       #     node-version: ${{ matrix.node-version }}
       #     cache: "npm"
@@ -34,7 +34,8 @@ jobs:
         run: |
           ls -la
           echo "$GITHUB_WORKSPACE"
-          find -type f .
+          ls -la "$GITHUB_WORKSPACE/quick-filter-table"
+          find . -type f
       - name: Install deps
         run: npm install
       - name: Build
