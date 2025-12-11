@@ -13,6 +13,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     strategy:
       matrix:
         node-version:
@@ -46,3 +49,10 @@ jobs:
         with:
           name: ci-build-output
           path: quick-filter-table/dist/ # The path to the file or directory to upload
+      - name: Add the build to the repo
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add -f ./dist/
+          git commit -m "chore: update build output [skip ci]" || echo "No changes to commit"
+          git push origin HEAD:main || echo "No changes to push"
