@@ -19,9 +19,9 @@ jobs:
           - 24.x
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
-    defaults:
-      run:
-        working-directory: $GITHUB_WORKSPACE/quick-filter-table
+    # defaults:
+    #   run:
+    #     working-directory: $GITHUB_WORKSPACE/quick-filter-table
 
     steps:
       - uses: actions/checkout@v4
@@ -33,6 +33,7 @@ jobs:
       - name: List directory
         run: |
           ls -la
+          echo "$GITHUB_WORKSPACE"
           find -type f .
       - name: Install deps
         run: npm install
