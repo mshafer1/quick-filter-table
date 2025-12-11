@@ -41,3 +41,8 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
+      - name: Upload artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: ci-build-output
+          path: quick-filter-table/dist/ # The path to the file or directory to upload
