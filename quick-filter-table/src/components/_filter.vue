@@ -2,7 +2,7 @@
     <div @click="clicked" class="filter-wrapper" @click.stop>
         <div class="filter-bar">&#x2758;</div>
         <div class="filter-triangle">&#x25BC;</div>
-        <div v-if="active" class="filter-bar filter-active">*</div>
+        <div v-if="active" class="filter-triangle filter-active">&#x25BC;</div>
     </div>
 </template>
 
@@ -49,7 +49,7 @@ export default {
 }
 
 .filter-active {
-    font-size: smaller;
     color: white;
+    margin-top: -4px;
 }
 </style>
