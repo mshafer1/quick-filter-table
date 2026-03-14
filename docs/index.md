@@ -1,6 +1,6 @@
 # Quick Filter Table Documentation
 
-[![GitHub Repo](https://img.shields.io/badge/GitHub-repo-blue?logo=github)](https://github.com/mshafer1/quick-filter-table) ![GitHub Release](https://img.shields.io/github/v/release/mshafer1/quick-filter-table)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-repo-blue?logo=github)](https://github.com/mshafer1/quick-filter-table) [![GitHub Release](https://img.shields.io/github/v/release/mshafer1/quick-filter-table)](https://github.com/mshafer1/quick-filter-table/releases)
 
 
 ## Overview
