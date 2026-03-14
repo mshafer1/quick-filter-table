@@ -229,7 +229,7 @@ QuickFilterTable.renderApp("app1", {
                     { first_name: "David", last_name: "Date", age: 28, city: "Miami" },
                     ],
                     items_map: function(item) {
-                        item.name = `${item.last_name}, ${item.first_name}`
+                        item.name = item.last_name + ", " + item.first_name // template literals work but this demo is delivered inside a literal
                         return item
                     },
                     headers: [
