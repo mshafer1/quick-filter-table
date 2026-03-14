@@ -36,10 +36,21 @@ See versions list at [github.com/quick-filter-table/releases](https://github.com
       function init() {
         QuickFilterTable.renderApp("app1", {
           items: [
-            { name: "Alice", age: 30, city: "New York" },
+            { name: "Frank", age: 33, city: "Boston" },
             { name: "Bob", age: 25, city: "Los Angeles" },
-            { name: "Charlie", age: 35, city: "Chicago" },
+            { name: "Laura", age: 24, city: "Philadelphia" },
+            { name: "Mallory", age: 32, city: "Dallas" },
+            { name: "Niaj", age: 23, city: "Houston" },
+            { name: "Olivia", age: 28, city: "San Diego" },
             { name: "David", age: 28, city: "Miami" },
+            { name: "Judy", age: 26, city: "Portland" },
+            { name: "Hannah", age: 29, city: "Austin" },
+            { name: "Alice", age: 30, city: "New York" },
+            { name: "Charlie", age: 35, city: "Chicago" },
+            { name: "Eve", age: 22, city: "Seattle" },
+            { name: "Kevin", age: 34, city: "Atlanta" },
+            { name: "Ian", age: 31, city: "Denver" },
+            { name: "Grace", age: 27, city: "San Francisco" },
           ],
           headers: [
             { text: "Name", value: "name", filter: "distinct" },
@@ -76,10 +87,21 @@ See versions list at [github.com/quick-filter-table/releases](https://github.com
                 js: `
                 QuickFilterTable.renderApp("app1", {
                     items: [
-                        { name: "Alice", age: 30, city: "New York" },
+                        { name: "Frank", age: 33, city: "Boston" },
                         { name: "Bob", age: 25, city: "Los Angeles" },
-                        { name: "Charlie", age: 35, city: "Chicago" },
+                        { name: "Laura", age: 24, city: "Philadelphia" },
+                        { name: "Mallory", age: 32, city: "Dallas" },
+                        { name: "Niaj", age: 23, city: "Houston" },
+                        { name: "Olivia", age: 28, city: "San Diego" },
                         { name: "David", age: 28, city: "Miami" },
+                        { name: "Judy", age: 26, city: "Portland" },
+                        { name: "Hannah", age: 29, city: "Austin" },
+                        { name: "Alice", age: 30, city: "New York" },
+                        { name: "Charlie", age: 35, city: "Chicago" },
+                        { name: "Eve", age: 22, city: "Seattle" },
+                        { name: "Kevin", age: 34, city: "Atlanta" },
+                        { name: "Ian", age: 31, city: "Denver" },
+                        { name: "Grace", age: 27, city: "San Francisco" },
                     ],
                     headers: [
                         { text: "Name", value: "name", filter: "distinct" },
