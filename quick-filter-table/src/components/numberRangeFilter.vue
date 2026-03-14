@@ -1,5 +1,6 @@
 <template>
-    <FilterIcon v-if="filterable" @clicked="showFilter = !showFilter; console.log('clicked on', header)"></FilterIcon>
+    <FilterIcon v-if="filterable" @clicked="showFilter = !showFilter; console.log('clicked on', header)"
+        :active="active"></FilterIcon>
     {{ header.text }}
     <div v-if="filterable" class="filter-dropdown slider-wrapper" :class="classForShowFilter" @click.stop>
         <!-- <input type="range" class="form-control-range" v-model="value" :min="minValue" :max="maxValue"
@@ -55,6 +56,11 @@ export default {
         },
         classForShowFilter: function () {
             return this.showFilter ? "" : "hidden";
+        },
+        active: function () {
+            var result = this.value != null && this.value.length === 2 && (this.value[0] != this.minValue || this.value[1] != this.maxValue);
+            console.log("Marking filter as active:", result);
+            return result;
         }
     },
     mounted() {
@@ -96,6 +102,7 @@ export default {
         update_filter(values, _ignore) {
             var low = parseFloat(values[0]);
             var high = parseFloat(values[1]);
+            this.value = [low, high];
             console.log("update filter", low, high);
             this.$emit('update-filter', [low, high]);
         }

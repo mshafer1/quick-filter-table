@@ -93,6 +93,10 @@ function renderApp(targetId, propsData = {}) {
             console.error('Error fetching items:', error)
           })
       } else {
+        var data = this.items
+        if (propsData.items_map != undefined) {
+          this.items = data.map(propsData.items_map)
+        }
         this.loaded = true
       }
     },
