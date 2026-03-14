@@ -1,7 +1,8 @@
 <template>
     <div @click="clicked" class="filter-wrapper" @click.stop>
-        <div class=filter-bar>&#x2758;</div>
-        <div class=filter-triangle>&#x25BC;</div>
+        <div class="filter-bar">&#x2758;</div>
+        <div class="filter-triangle">&#x25BC;</div>
+        <div v-if="active" class="filter-bar filter-active">*</div>
     </div>
 </template>
 
@@ -11,6 +12,7 @@ export default {
     components: {
     },
     emits: ['clicked'],
+    props: ['active'],
     data: function () {
         return {
         }
@@ -44,5 +46,10 @@ export default {
 
 .filter-bar {
     top: 0.1em;
+}
+
+.filter-active {
+    font-size: smaller;
+    color: white;
 }
 </style>

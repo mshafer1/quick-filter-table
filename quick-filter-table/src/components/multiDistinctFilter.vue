@@ -1,5 +1,6 @@
 <template>
-    <FilterIcon v-if="filterable" @clicked="showFilter = !showFilter; console.log('clicked on', header)"></FilterIcon>
+    <FilterIcon v-if="filterable" @clicked="showFilter = !showFilter; console.log('clicked on', header)"
+        :active="active"></FilterIcon>
     {{ header.text }}
     <div v-if="filterable && showFilter" class="filter-dropdown" @click.stop>
         <span><button @click="clear">&times; Clear</button></span>
@@ -29,11 +30,13 @@ export default {
             showFilter: false,
             uniqueValues: sortedUniq(this.all_values.sort()),
             value: {},
+            active: false,
         }
     },
     methods: {
         update_filter() {
             var result = Object.keys(this.value).filter(key => this.value[key]).join('\x00');
+            this.active = result.length > 0;
             console.log("Updating filter with value", result);
             this.$emit('update-filter', result);
         },
