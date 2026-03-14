@@ -1,5 +1,7 @@
 # quick-filter-table
 
+[![GitHub Docs](https://img.shields.io/badge/Docs-GitHub_Pages-blue)](https://mshafer1.github.io/quick-filter-table) ![GitHub Release](https://img.shields.io/github/v/release/mshafer1/quick-filter-table)
+
 A quick data-table viewer tool (with filtering/sorting enabled)
 
 # Usage
