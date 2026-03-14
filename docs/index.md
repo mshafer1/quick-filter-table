@@ -207,11 +207,11 @@ QuickFilterTable.renderApp("app1", {
 
 <details>
     <summary>Click here to expand live playground</summary>
-    <div id="container-2"></div>
+    <div id="container-3"></div>
     <script type="module">
         import { createPlayground } from 'https://cdn.jsdelivr.net/npm/livecodes@0.13.0';
 
-        createPlayground('#container-2', {
+        createPlayground('#container-3', {
             params: {
                 scripts: [
                     'https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.0/quick-filter-table/dist/quick-filter-table.js',
