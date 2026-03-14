@@ -17,22 +17,15 @@
         function init() {
             QuickFilterTable.renderApp("app1", {
                 items: [
-                    { name: "Frank", age: 33, city: "Boston" },
-                    { name: "Bob", age: 25, city: "Los Angeles" },
-                    { name: "Laura", age: 24, city: "Philadelphia" },
-                    { name: "Mallory", age: 32, city: "Dallas" },
-                    { name: "Niaj", age: 23, city: "Houston" },
-                    { name: "Olivia", age: 28, city: "San Diego" },
-                    { name: "David", age: 28, city: "Miami" },
-                    { name: "Judy", age: 26, city: "Portland" },
-                    { name: "Hannah", age: 29, city: "Austin" },
-                    { name: "Alice", age: 30, city: "New York" },
-                    { name: "Charlie", age: 35, city: "Chicago" },
-                    { name: "Eve", age: 22, city: "Seattle" },
-                    { name: "Kevin", age: 34, city: "Atlanta" },
-                    { name: "Ian", age: 31, city: "Denver" },
-                    { name: "Grace", age: 27, city: "San Francisco" },
+                    { first_name: "Alice", last_name: "Apple", age: 30, city: "New York" },
+                    { first_name: "Bob", last_name: "Banana", age: 25, city: "Los Angeles" },
+                    { first_name: "Charlie", last_name: "Cherry", age: 35, city: "Chicago" },
+                    { first_name: "David", last_name: "Date", age: 28, city: "Miami" },
                 ],
+                items_map: function (item) {
+                    item.name = `${item.last_name}, ${item.first_name}`
+                    return item
+                },
                 headers: [
                     { text: "Name", value: "name", filter: "distinct" },
                     { text: "Age", value: "age", filter: "numberRange" },
