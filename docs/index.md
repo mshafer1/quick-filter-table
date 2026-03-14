@@ -1,5 +1,3 @@
-
-
 # Quick Filter Table Documentation
 
 ## Overview
