@@ -233,7 +233,7 @@ QuickFilterTable.renderApp("app1", {
                         return item
                     },
                     headers: [
-                    { text: "Name", value: "name", filter: "multiDistinct" },
+                    { text: "Name", value: "name", filter: "distinctMulti" },
                     { text: "Age", value: "age", filter: "numberRange" },
                     { text: "City", value: "city", filter: "text" },
                     ],
