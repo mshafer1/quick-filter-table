@@ -164,7 +164,7 @@ Data will be fetched on load using a `GET` request using the `axios` library.
                 js: `
                 QuickFilterTable.renderApp("app1", {
                     items_url: 'https://mshafer1.github.io/quick-filter-table/example/path/to/file.json',
-                    items_path: 'feed.items',
+                    items_key: 'feed.items',
                     headers: [
                         { text: "Name", value: "name", filter: "distinct" },
                         { text: "Age", value: "age", filter: "numberRange" },
