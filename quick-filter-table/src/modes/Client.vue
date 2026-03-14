@@ -26,6 +26,8 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
                 <template v-for="(header, index) in filtered_headers" v-slot:[`header-${header.value}`]="header">
                     <DistinctFilter :header="header" :all_values="all_items.map(i => i[header.value])"
                         v-if="header.filter == 'distinct'" @update-filter="update_filter(header, $event)" />
+                    <MultiDistinctFilter :header="header" :all_values="all_items.map(i => i[header.value])"
+                        v-if="header.filter == 'distinctMulti'" @update-filter="update_filter(header, $event)" />
                     <NumberRangeFilter :header="header" :all_values="all_items.map(i => i[header.value])"
                         v-if="header.filter == 'numberRange'" @update-filter="update_filter(header, $event)" />
                     <TextFilter :header="header" :all_values="all_items.map(i => i[header.value])"
@@ -43,7 +45,8 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import 'vue3-easy-data-table/dist/style.css';
 
-import DistinctFilter from '../components/distinctFilter.vue';
+import DistinctFilter from '@/components/distinctFilter.vue';
+import MultiDistinctFilter from '@/components/multiDistinctFilter.vue';
 import NumberRangeFilter from '@/components/numberRangeFilter.vue';
 import TextFilter from '@/components/textFilter.vue';
 
@@ -52,6 +55,7 @@ export default {
     components: {
         Vue3EasyDataTable,
         DistinctFilter,
+        MultiDistinctFilter,
         NumberRangeFilter,
         TextFilter,
     },
@@ -121,6 +125,16 @@ export default {
                             if (min !== null && numValue < min) return false;
                             if (max !== null && numValue > max) return false;
                             return true;
+                        },
+                        criteria: h.filterValue,
+                    });
+                }
+                if (h.filter == 'distinctMulti' && h.filterValue !== null && h.filterValue.trim() !== "") {
+                    var options = new Set(h.filterValue.split('\x00'));
+                    result.push({
+                        field: h.value,
+                        comparison: (value, criteria) => {
+                            return options.has(value);
                         },
                         criteria: h.filterValue,
                     });
