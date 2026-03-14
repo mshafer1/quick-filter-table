@@ -166,7 +166,8 @@ Data will be fetched on load using a `GET` request using the `axios` library.
                     items_url: 'https://mshafer1.github.io/quick-filter-table/example/path/to/file.json',
                     items_key: 'feed.items',
                     headers: [
-                        { text: "Name", value: "name", filter: "distinct" },
+                        { text: "Last Name", value: "last_name", filter: "distinct" },
+                        { text: "First Name", value: "first_name", filter: "distinctMulti" },
                         { text: "Age", value: "age", filter: "numberRange" },
                         { text: "City", value: "city", filter: "text" },
                     ],
