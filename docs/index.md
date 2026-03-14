@@ -60,6 +60,40 @@ See versions list at [github.com/quick-filter-table/releases](https://github.com
 </html>
 ```
 
+<details>
+    <summary>Click here to expand live playground</summary>
+    <div id="container-1"></div>
+    <script type="module">
+        import { createPlayground } from 'https://cdn.jsdelivr.net/npm/livecodes@0.13.0';
+
+        createPlayground('#container-1', {
+            params: {
+                scripts: [
+                    'https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.0/quick-filter-table/dist/quick-filter-table.js',
+                ],
+                stylesheets: [
+                    'https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.0/quick-filter-table/dist/quick-filter-table.css',
+                ],
+                html: '<div id="app1"></div>',
+                js: `
+                QuickFilterTable.renderApp("app1", {
+                    items: [
+                        { name: "Alice", age: 30, city: "New York" },
+                        { name: "Bob", age: 25, city: "Los Angeles" },
+                        { name: "Charlie", age: 35, city: "Chicago" },
+                        { name: "David", age: 28, city: "Miami" },
+                    ],
+                    headers: [
+                        { text: "Name", value: "name", filter: "distinct" },
+                        { text: "Age", value: "age", filter: "numberRange" },
+                        { text: "City", value: "city", filter: "text" },
+                    ],
+                });`,
+            },
+        });
+    </script>
+</details>
+
 ---
 
 ## Dynamic Data Loading
@@ -92,6 +126,36 @@ QuickFilterTable.renderApp("app1", {
 
 Data will be fetched on load using a `GET` request using the `axios` library.
 
+<details>
+    <summary>Click here to expand live playground</summary>
+    <div id="container-2"></div>
+    <script type="module">
+        import { createPlayground } from 'https://cdn.jsdelivr.net/npm/livecodes@0.13.0';
+
+        createPlayground('#container-2', {
+            params: {
+                scripts: [
+                    'https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.0/quick-filter-table/dist/quick-filter-table.js',
+                ],
+                stylesheets: [
+                    'https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.0/quick-filter-table/dist/quick-filter-table.css',
+                ],
+                html: '<div id="app1"></div>',
+                js: `
+                QuickFilterTable.renderApp("app1", {
+                    items_url: 'https://mshafer1.github.io/quick-filter-table/example/path/to/file.json',
+                    items_path: 'feed.items',
+                    headers: [
+                        { text: "Name", value: "name", filter: "distinct" },
+                        { text: "Age", value: "age", filter: "numberRange" },
+                        { text: "City", value: "city", filter: "text" },
+                    ],
+                });`,
+            },
+        });
+    </script>
+</details>
+
 ---
 
 ## Data manipulation
@@ -120,6 +184,44 @@ QuickFilterTable.renderApp("app1", {
 });
 ```
 
+<details>
+    <summary>Click here to expand live playground</summary>
+    <div id="container-2"></div>
+    <script type="module">
+        import { createPlayground } from 'https://cdn.jsdelivr.net/npm/livecodes@0.13.0';
+
+        createPlayground('#container-2', {
+            params: {
+                scripts: [
+                    'https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.0/quick-filter-table/dist/quick-filter-table.js',
+                ],
+                stylesheets: [
+                    'https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.0/quick-filter-table/dist/quick-filter-table.css',
+                ],
+                html: '<div id="app1"></div>',
+                js: `
+                QuickFilterTable.renderApp("app1", {
+                    items: [
+                    { first_name: "Alice", last_name: "Apple", age: 30, city: "New York" },
+                    { first_name: "Bob", last_name: "Banana", age: 25, city: "Los Angeles" },
+                    { first_name: "Charlie", last_name: "Cherry", age: 35, city: "Chicago" },
+                    { first_name: "David", last_name: "Date", age: 28, city: "Miami" },
+                    ],
+                    items_map: function(item) {
+                        item.name = `${item.last_name}, ${item.first_name}`
+                        return item
+                    },
+                    headers: [
+                    { text: "Name", value: "name", filter: "multiDistinct" },
+                    { text: "Age", value: "age", filter: "numberRange" },
+                    { text: "City", value: "city", filter: "text" },
+                    ],
+                });`,
+            },
+        });
+    </script>
+</details>
+
 ---
 
 ## Header options
@@ -143,6 +245,12 @@ QuickFilterTable.renderApp("app1", {
 Filters by unique values in a column. Example:
 ```js
 { text: "Name", value: "name", filter: "distinct" }
+```
+
+### DistinctMulti Filter
+Filters by unique values in a column, uses check boxes to allow multiple choices. Example:
+```js
+{ text: "Name", value: "name", filter: "distinctMulti" }
 ```
 
 ### Text Filter
