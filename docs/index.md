@@ -157,4 +157,4 @@ Provides a number range slider to filter rows.
 { text: "Age", value: "age", filter: "numberRange" }
 ```
 
-Note: Values for this filter are parse using the JavaScript `parseFloat`, and NaN is considered to not be a match.
+Note: Values for this filter are parsed using the JavaScript `parseFloat`, and NaN is considered to not be a match.
