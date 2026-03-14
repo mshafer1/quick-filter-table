@@ -28,6 +28,8 @@ function renderApp(targetId, propsData = {}) {
       sortable: header.sortable !== undefined ? header.sortable : true,
       // if html is explicitly set to true, use it; otherwise default to false
       html: header.html === true ? true : false,
+      // if filter is set, use value; oehterwise, default to null
+      filter: header.filter !== undefined ? header.filter : null,
     }
   })
 

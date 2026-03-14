@@ -19,9 +19,17 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
             </div>
             <Vue3EasyDataTable buttons-pagination :headers="used_headers" :items="working_items"
                 :rows-per-page="default_rows_per_page" table-class-name="customize-table" alternating
-                :slotNames="html_slots">
+                :slotNames="html_slots" :filter-options="filterOptions">
                 <template v-for="(field, index) in html_slots" v-slot:[`item-${field}`]="item">
                     <span v-html="item[field]"></span>
+                </template>
+                <template v-for="(header, index) in filtered_headers" v-slot:[`header-${header.value}`]="header">
+                    <DistinctFilter :header="header" :all_values="all_items.map(i => i[header.value])"
+                        v-if="header.filter == 'distinct'" @update-filter="update_filter(header, $event)" />
+                    <NumberRangeFilter :header="header" :all_values="all_items.map(i => i[header.value])"
+                        v-if="header.filter == 'numberRange'" @update-filter="update_filter(header, $event)" />
+                    <TextFilter :header="header" :all_values="all_items.map(i => i[header.value])"
+                        v-if="header.filter == 'text'" @update-filter="update_filter(header, $event)" />
                 </template>
             </Vue3EasyDataTable>
         </div>
@@ -35,13 +43,31 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import 'vue3-easy-data-table/dist/style.css';
 
+import DistinctFilter from '../components/distinctFilter.vue';
+import NumberRangeFilter from '@/components/numberRangeFilter.vue';
+import TextFilter from '@/components/textFilter.vue';
+
 export default {
     name: 'ClientMode',
     components: {
         Vue3EasyDataTable,
+        DistinctFilter,
+        NumberRangeFilter,
+        TextFilter,
     },
     props: ['headers', 'items', "loaded", 'default_rows_per_page'],
     data: function () {
+        var headers_with_filters = this.headers.filter(h => h.filter !== null)
+        headers_with_filters = headers_with_filters.map(h => {
+            if (h.showFilter === undefined) {
+                h.showFilter = false;
+            }
+            if (h.filterValue === undefined) {
+                h.filterValue = null;
+            }
+            return h;
+        })
+
         return {
             working_items: this.items,
             all_items: this.items,
@@ -49,6 +75,8 @@ export default {
             header_names: this.headers.map(h => h.value),
             searchFocused: false,
             searchValue: "",
+            filtered_headers: headers_with_filters,
+            // refreshKey: 0, // just used to force computed values to refresh when needed
         }
     },
     mounted: function () {
@@ -56,6 +84,50 @@ export default {
     computed: {
         html_slots() {
             return this.used_headers.filter(h => h.html == true).map(h => h.value);
+        },
+        filterOptions() {
+            // this.refreshKey; // reference just to trigger recomputation when needed
+            const result = [];
+            this.filtered_headers.forEach(h => {
+                console.log("Processing header for filter options:", h);
+                if (h.filter == 'distinct' && h.filterValue !== null) {
+                    result.push({
+                        field: h.value,
+                        comparison: '=',
+                        criteria: h.filterValue
+                    });
+                }
+                if (h.filter == 'text' && h.filterValue !== null && h.filterValue.trim() !== "") {
+                    result.push({
+                        field: h.value,
+                        comparison: (value, criteria) => {
+                            var compareValue = (criteria.toLowerCase() == criteria) ? (value || "").toLowerCase() : value;
+                            return compareValue != null && criteria != null &&
+                                typeof compareValue === 'string' && compareValue.includes(criteria.trim())
+                        },
+                        criteria: h.filterValue,
+                    });
+                }
+                if (h.filter == 'numberRange' && h.filterValue !== null && (h.filterValue[0] !== null || h.filterValue[1] !== null)) {
+                    console.log("Filter value", h.filterValue)
+                    var min = h.filterValue[0]
+                    var max = h.filterValue[1]
+                    console.log("Checking for numeric range filter with min:", min, "max:", max);
+                    result.push({
+                        field: h.value,
+                        comparison: (value, criteria) => {
+                            var numValue = parseFloat(value);
+                            if (isNaN(numValue)) return false;
+                            if (min !== null && numValue < min) return false;
+                            if (max !== null && numValue > max) return false;
+                            return true;
+                        },
+                        criteria: h.filterValue,
+                    });
+                }
+            })
+            console.log("Computed filter options:", result);
+            return result;
         }
     },
     created() {
@@ -74,7 +146,7 @@ export default {
                 console.log("Performing fuzzy search for:", this.searchValue.trim(), "in", this.all_items, "fields:", this.header_names);
                 var search_results = fuzzyFilter(this.all_items, this.searchValue.trim(), { fields: this.header_names })
                 console.log("Fuzzy search results:", search_results);
-                this.working_items = search_results.map(r => r.item);
+                this.working_items = search_results.filter(r => r.score > 0).map(r => r.item);
                 console.log("Updated items:", this.working_items);
             }, 300)();
         },
@@ -89,6 +161,15 @@ export default {
             var el = event.target;
             this.searchFocused = el == this.$refs.search;
         },
+        update_filter(header, value) {
+            console.log("Updating filter for header:", header, "with value:", value);
+            this.filtered_headers.forEach(h => {
+                if (h.value == header.value) {
+                    h.filterValue = value;
+                }
+            })
+            // this.refreshKey += 1; // trigger recomputation of filterOptions
+        }
     },
     watch: {
         items(newItems) {
@@ -99,3 +180,26 @@ export default {
     }
 }
 </script>
+
+<style>
+.filter-dropdown {
+    position: absolute;
+    z-index: 1000;
+    background: white;
+    border: 1px solid black;
+    /* padding: 10px; */
+    margin-top: 5px;
+    margin-left: 5px;
+    top: 30px;
+    min-width: 150px;
+
+    padding-bottom: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-top: .5em;
+}
+
+.hidden {
+    display: none;
+}
+</style>
