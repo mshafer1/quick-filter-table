@@ -77,7 +77,63 @@ QuickFilterTable.renderApp("app1", {
 });
 ```
 
+To access an array of items nested within the returned data, provide a `items_key` to specify the location.
+```js
+QuickFilterTable.renderApp("app1", {
+  items_url: "relative/path/to/data.json",
+  items_key: "people.search.results.items",
+  headers: [
+    { text: "Name", value: "name", filter: "distinct" },
+    { text: "Age", value: "age", filter: "numberRange" },
+    { text: "City", value: "city", filter: "text" },
+  ],
+});
+```
+
 Data will be fetched on load using a `GET` request using the `axios` library.
+
+---
+
+## Data manipulation
+
+`items_map` provides a method to create calculated columns.
+
+If `items_map` is provided, then each item in the array is passed to this function before processing.
+
+```js
+QuickFilterTable.renderApp("app1", {
+    items: [
+    { first_name: "Alice", last_name: "Apple", age: 30, city: "New York" },
+    { first_name: "Bob", last_name: "Banana", age: 25, city: "Los Angeles" },
+    { first_name: "Charlie", last_name: "Cherry", age: 35, city: "Chicago" },
+    { first_name: "David", last_name: "Date", age: 28, city: "Miami" },
+    ],
+    items_map: function(item) {
+        item.name = `${item.last_name}, ${item.first_name}`
+        return item
+    },
+    headers: [
+    { text: "Name", value: "name", filter: "distinct" },
+    { text: "Age", value: "age", filter: "numberRange" },
+    { text: "City", value: "city", filter: "text" },
+    ],
+});
+```
+
+---
+
+## Header options
+
+**NOTE:** The order of items in the `headers` array specifies the order of the columns displayed.
+
+| Name | Required? | Default | Description |
+| ---- | --------- | --------| ----- |
+| `text` | Yes | \- | The name to show at the top of the column |
+| `value` | Yes | \- | The name of the field in each object to show |
+| `sortable` | No | `true` | Whether or not to allow this headers column to be sorted |
+| `html` | No | `false` | When true, the contents of `item[value]` will be loaded in as raw HTML. Useful for showing links |
+| `filter` | No | `null` | If specified, provide filter options. See [#Filters](#Filters) for details |
+
 
 ---
 
