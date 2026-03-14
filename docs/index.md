@@ -13,8 +13,8 @@ The `quick-filter-table` allows you to easily get a searchable, filterable, sort
 Include the library's CSS and JavaScript files in your HTML file:
 
 ```html
-<link href="https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.0.1/quick-filter-table/dist/quick-filter-table.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.0.1/quick-filter-table/dist/quick-filter-table.js"></script>
+<link href="https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.0/quick-filter-table/dist/quick-filter-table.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.0/quick-filter-table/dist/quick-filter-table.js"></script>
 ```
 
 See versions list at [github.com/quick-filter-table/releases](https://github.com/mshafer1/quick-filter-table/releases)
@@ -32,8 +32,8 @@ See versions list at [github.com/quick-filter-table/releases](https://github.com
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quick Filter Table Example</title>
-    <link href="https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.0.1/quick-filter-table/dist/quick-filter-table.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.0.1/quick-filter-table/dist/quick-filter-table.js"></script>
+    <link href="https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.0/quick-filter-table/dist/quick-filter-table.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.0/quick-filter-table/dist/quick-filter-table.js"></script>
     <script>
       function init() {
         QuickFilterTable.renderApp("app1", {
