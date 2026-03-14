@@ -1,5 +1,7 @@
 # Quick Filter Table Documentation
 
+[![GitHub Repo](https://img.shields.io/badge/GitHub-repo-blue)](https://github.com/mshafer1/quick-filter-table)
+
 ## Overview
 
 The `quick-filter-table` allows you to easily get a searchable, filterable, sortable data table with minimal boiler plate code.
