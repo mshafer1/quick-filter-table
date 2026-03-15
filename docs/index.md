@@ -18,7 +18,7 @@ Include the library's CSS and JavaScript files in your HTML file:
 <script src="https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.1/quick-filter-table/dist/quick-filter-table.js"></script>
 ```
 
-See versions list at [github.com/quick-filter-table/releases](https://github.com/mshafer1/quick-filter-table/releases)
+See versions list at [github.com/mshafer1/quick-filter-table/releases](https://github.com/mshafer1/quick-filter-table/releases)
 
 ---
 
