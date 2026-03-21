@@ -18,8 +18,8 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
                 </div>
             </div>
             <Vue3EasyDataTable buttons-pagination :headers="used_headers" :items="working_items"
-                :rows-per-page="default_rows_per_page" table-class-name="customize-table" alternating
-                :slotNames="html_slots" :filter-options="filterOptions">
+                :rows-per-page="default_rows_per_page" :rows-items="rowsPerPageOptions" :hide-footer="hideFooter"
+                table-class-name="customize-table" alternating :slotNames="html_slots" :filter-options="filterOptions">
                 <template v-for="(field, index) in html_slots" v-slot:[`item-${field}`]="item">
                     <span v-html="item[field]"></span>
                 </template>
@@ -27,11 +27,14 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
                     <DistinctFilter :header="header" :all_values="all_items.map(i => i[header.value])"
                         v-if="header.filter == 'distinct'" @update-filter="update_filter(header, $event)" />
                     <MultiDistinctFilter :header="header" :all_values="all_items.map(i => i[header.value])"
-                        v-if="header.filter == 'distinctMulti'" @update-filter="update_filter(header, $event)" />
+                        v-else-if="header.filter == 'distinctMulti'" @update-filter="update_filter(header, $event)" />
                     <NumberRangeFilter :header="header" :all_values="all_items.map(i => i[header.value])"
-                        v-if="header.filter == 'numberRange'" @update-filter="update_filter(header, $event)" />
+                        v-else-if="header.filter == 'numberRange'" @update-filter="update_filter(header, $event)" />
                     <TextFilter :header="header" :all_values="all_items.map(i => i[header.value])"
-                        v-if="header.filter == 'text'" @update-filter="update_filter(header, $event)" />
+                        v-else-if="header.filter == 'text'" @update-filter="update_filter(header, $event)" />
+                    <span v-else>{{ header.text }}
+                        <span v-show="false"> &#9888; Invalid filter '{{ header.filter }}'</span>
+                    </span>
                 </template>
             </Vue3EasyDataTable>
         </div>
@@ -59,7 +62,7 @@ export default {
         NumberRangeFilter,
         TextFilter,
     },
-    props: ['headers', 'items', "loaded", 'default_rows_per_page'],
+    props: ['headers', 'items', "loaded", 'default_rows_per_page', 'rows_per_page_options'],
     data: function () {
         var headers_with_filters = this.headers.filter(h => h.filter !== null)
         headers_with_filters = headers_with_filters.map(h => {
@@ -80,6 +83,8 @@ export default {
             searchFocused: false,
             searchValue: "",
             filtered_headers: headers_with_filters,
+            hideFooter: this.rows_per_page_options == null,
+            rowsPerPageOptions: (this.rows_per_page_options == null) ? [] : this.rows_per_page_options,
             // refreshKey: 0, // just used to force computed values to refresh when needed
         }
     },
@@ -93,7 +98,6 @@ export default {
             // this.refreshKey; // reference just to trigger recomputation when needed
             const result = [];
             this.filtered_headers.forEach(h => {
-                console.log("Processing header for filter options:", h);
                 if (h.filter == 'distinct' && h.filterValue !== null) {
                     result.push({
                         field: h.value,
@@ -113,10 +117,8 @@ export default {
                     });
                 }
                 if (h.filter == 'numberRange' && h.filterValue !== null && (h.filterValue[0] !== null || h.filterValue[1] !== null)) {
-                    console.log("Filter value", h.filterValue)
                     var min = h.filterValue[0]
                     var max = h.filterValue[1]
-                    console.log("Checking for numeric range filter with min:", min, "max:", max);
                     result.push({
                         field: h.value,
                         comparison: (value, criteria) => {
@@ -140,28 +142,26 @@ export default {
                     });
                 }
             })
-            console.log("Computed filter options:", result);
             return result;
         }
     },
     created() {
-        console.log('QuickFilterTable app created.')
-        console.log('Columns:', this.used_headers)
-        console.log('Items:', this.items)
+        console.debug('QuickFilterTable app created.')
+        console.debug('Columns:', this.used_headers)
+        console.debug('Items:', this.items)
     },
     methods: {
         update_search() {
-            console.log("Search value:", this.searchValue);
             debounce(() => {
                 if (this.searchValue.trim() === "") {
                     this.working_items = this.all_items;
                     return;
                 }
-                console.log("Performing fuzzy search for:", this.searchValue.trim(), "in", this.all_items, "fields:", this.header_names);
+                console.debug("Performing fuzzy search for:", this.searchValue.trim(), "in", this.all_items, "fields:", this.header_names);
                 var search_results = fuzzyFilter(this.all_items, this.searchValue.trim(), { fields: this.header_names })
-                console.log("Fuzzy search results:", search_results);
+                console.debug("Fuzzy search results:", search_results);
                 this.working_items = search_results.filter(r => r.score > 0).map(r => r.item);
-                console.log("Updated items:", this.working_items);
+                console.debug("Updated items:", this.working_items);
             }, 300)();
         },
         clear_search() {
@@ -176,7 +176,7 @@ export default {
             this.searchFocused = el == this.$refs.search;
         },
         update_filter(header, value) {
-            console.log("Updating filter for header:", header, "with value:", value);
+            console.debug("Updating filter for header:", header, "with value:", value);
             this.filtered_headers.forEach(h => {
                 if (h.value == header.value) {
                     h.filterValue = value;
@@ -211,9 +211,7 @@ export default {
     padding-left: 1em;
     padding-right: 1em;
     padding-top: .5em;
-}
 
-.hidden {
-    display: none;
+    overflow-y: scroll;
 }
 </style>

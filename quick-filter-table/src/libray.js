@@ -18,7 +18,6 @@ import 'bootstrap'
  */
 function renderApp(targetId, propsData = {}) {
   const targetElement = document.getElementById(targetId)
-  console.log('renderApp called with targetId:', targetId, 'propsData:', propsData)
 
   // required fields
   const headers = propsData.headers.map((header) => {
@@ -61,20 +60,25 @@ function renderApp(targetId, propsData = {}) {
   }
 
   const RootWrapper = {
-    template: `<ClientMode :headers="headers" :items="items" :loaded="loaded" :default_rows_per_page="default_rows_per_page" />`,
+    template: `<ClientMode :headers="headers" :items="items" :loaded="loaded" :default_rows_per_page="default_rows_per_page" :rows_per_page_options="rows_per_page_options" />`,
     components: { ClientMode },
     data() {
       return {
         headers: headers,
         items: propsData.items || [],
         items_url: propsData.items_url || null,
-        default_rows_per_page: propsData.default_rows_per_page || 10,
+        default_rows_per_page: propsData.default_rows_per_page || 25,
+        rows_per_page_options:
+          typeof propsData.rows_per_page_options !== 'undefined' &&
+          propsData.rows_per_page_options === null
+            ? null
+            : propsData.rows_per_page_options || [25, 50, 100],
         loaded: false,
       }
     },
     mounted() {
       if (this.items_url != null) {
-        console.log('Fetching items from URL:', this.items_url)
+        console.debug('Fetching items from URL:', this.items_url)
         axios
           .get(this.items_url)
           .then((response) => {
@@ -109,7 +113,7 @@ function renderApp(targetId, propsData = {}) {
 
   // Mount the application to the target element
   app.mount(targetElement)
-  console.log(`MyCdnLibrary mounted to #${targetId}`)
+  console.debug(`QuickFilterTable mounted to #${targetId}`)
 }
 
 // Crucial: Expose the mounting function to the outside world

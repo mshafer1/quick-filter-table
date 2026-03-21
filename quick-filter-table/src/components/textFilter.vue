@@ -1,8 +1,7 @@
 <template>
-    <FilterIcon v-if="filterable" @clicked="showFilter = !showFilter; console.log('clicked on', header)"
-        :active="active"></FilterIcon>
+    <FilterIcon v-if="filterable" @clicked="showFilter = !showFilter" :active="active"></FilterIcon>
     {{ header.text }}
-    <div v-if="filterable && showFilter" class="filter-dropdown" @click.stop>
+    <div v-show="filterable && showFilter" class="filter-dropdown" @click.stop>
         <div class="input-group mt-3 mb-1">
             <input class="form-control form-control-sm" ref="filter" type="text" v-model="value" @input="update_filter"
                 @focus="focusChanged" @blur="focusChanged" :class="{ 'focused': filterFocused }"

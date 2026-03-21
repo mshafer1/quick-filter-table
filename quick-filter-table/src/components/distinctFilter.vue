@@ -1,8 +1,7 @@
 <template>
-    <FilterIcon v-if="filterable" @clicked="showFilter = !showFilter; console.log('clicked on', header)"
-        :active="active"></FilterIcon>
+    <FilterIcon v-if="filterable" @clicked="showFilter = !showFilter" :active="active"></FilterIcon>
     {{ header.text }}
-    <div v-if="filterable && showFilter" class="filter-dropdown" @click.stop>
+    <div v-show="filterable && showFilter" class="filter-dropdown" @click.stop>
         <select class="form-control form-control-sm form-select" v-model="value" @change="update_filter">
             <option :value="null">All</option>
             <option v-for="option in uniqueValues" :value="option">
