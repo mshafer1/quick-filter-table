@@ -119,6 +119,106 @@ See versions list at [github.com/mshafer1/quick-filter-table/releases](https://g
 
 ---
 
+## Configuring paging
+
+- `default_rows_per_page` can be passed to set the default number of rows per page that the user sees.
+- `row_per_page_options` can be passed to change the default list of numbers of options available (set to `null` to turn off paging)
+  
+<details>
+    <summary>Click here to expand live playground</summary>
+    <div id="container-2"></div>
+    <script type="module">
+        import { createPlayground } from 'https://cdn.jsdelivr.net/npm/livecodes@0.13.0';
+
+        createPlayground('#container-2', {
+            params: {
+                scripts: [
+                    'https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.3/quick-filter-table/dist/quick-filter-table.js',
+                ],
+                stylesheets: [
+                    'https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.3/quick-filter-table/dist/quick-filter-table.css',
+                ],
+                html: '<div id="app1"></div>',
+                js: `
+                QuickFilterTable.renderApp("app1", {
+                    items: [
+                        { name: "Frank", age: 33, city: "Boston" },
+                        { name: "Bob", age: 25, city: "Los Angeles" },
+                        { name: "Laura", age: 24, city: "Philadelphia" },
+                        { name: "Mallory", age: 32, city: "Dallas" },
+                        { name: "Niaj", age: 23, city: "Houston" },
+                        { name: "Olivia", age: 28, city: "San Diego" },
+                        { name: "David", age: 28, city: "Miami" },
+                        { name: "Judy", age: 26, city: "Portland" },
+                        { name: "Hannah", age: 29, city: "Austin" },
+                        { name: "Alice", age: 30, city: "New York" },
+                        { name: "Charlie", age: 35, city: "Chicago" },
+                        { name: "Eve", age: 22, city: "Seattle" },
+                        { name: "Kevin", age: 34, city: "Atlanta" },
+                        { name: "Ian", age: 31, city: "Denver" },
+                        { name: "Grace", age: 27, city: "San Francisco" },
+                    ],
+                    headers: [
+                        { text: "Name", value: "name", filter: "distinct" },
+                        { text: "Age", value: "age", filter: "numberRange" },
+                        { text: "City", value: "city", filter: "text" },
+                    ],
+                    default_rows_per_page: 20,
+                    row_per_page_options: [5, 25, 50],
+                });`,
+            },
+        });
+    </script>
+</details>
+
+<details>
+    <summary>Click here to expand live playground</summary>
+    <div id="container-3"></div>
+    <script type="module">
+        import { createPlayground } from 'https://cdn.jsdelivr.net/npm/livecodes@0.13.0';
+
+        createPlayground('#container-3', {
+            params: {
+                scripts: [
+                    'https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.3/quick-filter-table/dist/quick-filter-table.js',
+                ],
+                stylesheets: [
+                    'https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.3/quick-filter-table/dist/quick-filter-table.css',
+                ],
+                html: '<div id="app1"></div>',
+                js: `
+                QuickFilterTable.renderApp("app1", {
+                    items: [
+                        { name: "Frank", age: 33, city: "Boston" },
+                        { name: "Bob", age: 25, city: "Los Angeles" },
+                        { name: "Laura", age: 24, city: "Philadelphia" },
+                        { name: "Mallory", age: 32, city: "Dallas" },
+                        { name: "Niaj", age: 23, city: "Houston" },
+                        { name: "Olivia", age: 28, city: "San Diego" },
+                        { name: "David", age: 28, city: "Miami" },
+                        { name: "Judy", age: 26, city: "Portland" },
+                        { name: "Hannah", age: 29, city: "Austin" },
+                        { name: "Alice", age: 30, city: "New York" },
+                        { name: "Charlie", age: 35, city: "Chicago" },
+                        { name: "Eve", age: 22, city: "Seattle" },
+                        { name: "Kevin", age: 34, city: "Atlanta" },
+                        { name: "Ian", age: 31, city: "Denver" },
+                        { name: "Grace", age: 27, city: "San Francisco" },
+                    ],
+                    headers: [
+                        { text: "Name", value: "name", filter: "distinct" },
+                        { text: "Age", value: "age", filter: "numberRange" },
+                        { text: "City", value: "city", filter: "text" },
+                    ],
+                    row_per_page_options: null,
+                });`,
+            },
+        });
+    </script>
+</details>
+
+---
+
 ## Dynamic Data Loading
 
 Instead of providing the `items` array directly, you can load data dynamically using the `items_url` property:
@@ -151,11 +251,11 @@ Data will be fetched on load using a `GET` request using the `axios` library.
 
 <details>
     <summary>Click here to expand live playground</summary>
-    <div id="container-2"></div>
+    <div id="container-4"></div>
     <script type="module">
         import { createPlayground } from 'https://cdn.jsdelivr.net/npm/livecodes@0.13.0';
 
-        createPlayground('#container-2', {
+        createPlayground('#container-4', {
             params: {
                 scripts: [
                     'https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.3/quick-filter-table/dist/quick-filter-table.js',
@@ -210,11 +310,11 @@ QuickFilterTable.renderApp("app1", {
 
 <details>
     <summary>Click here to expand live playground</summary>
-    <div id="container-3"></div>
+    <div id="container-5"></div>
     <script type="module">
         import { createPlayground } from 'https://cdn.jsdelivr.net/npm/livecodes@0.13.0';
 
-        createPlayground('#container-3', {
+        createPlayground('#container-5', {
             params: {
                 scripts: [
                     'https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.3/quick-filter-table/dist/quick-filter-table.js',

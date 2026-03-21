@@ -4,4 +4,7 @@
 [x] Support specifying a sub-data-path in that data URL (.rss.feed.item)
 [-] Switch icons to Google Material
 [x] Use BootStrap for styling
-[ ] publish
+[x] publish
+
+[x] document default_rows_per_page
+[x] expose rows-items (as row_per_page_options)
