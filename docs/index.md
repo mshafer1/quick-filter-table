@@ -122,7 +122,7 @@ See versions list at [github.com/mshafer1/quick-filter-table/releases](https://g
 ## Configuring paging
 
 - `default_rows_per_page` can be passed to set the default number of rows per page that the user sees.
-- `row_per_page_options` can be passed to change the default list of numbers of options available (set to `null` to turn off paging)
+- `rows_per_page_options` can be passed to change the default list of numbers of options available (set to `null` to turn off paging)
   
 <details>
     <summary>Click here to expand live playground</summary>
@@ -164,7 +164,7 @@ See versions list at [github.com/mshafer1/quick-filter-table/releases](https://g
                         { text: "City", value: "city", filter: "text" },
                     ],
                     default_rows_per_page: 20,
-                    row_per_page_options: [5, 25, 50],
+                    rows_per_page_options: [5, 25, 50],
                 });`,
             },
         });
@@ -210,7 +210,7 @@ See versions list at [github.com/mshafer1/quick-filter-table/releases](https://g
                         { text: "Age", value: "age", filter: "numberRange" },
                         { text: "City", value: "city", filter: "text" },
                     ],
-                    row_per_page_options: null,
+                    rows_per_page_options: null,
                 });`,
             },
         });
