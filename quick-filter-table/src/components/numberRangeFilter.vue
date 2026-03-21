@@ -2,7 +2,7 @@
     <FilterIcon v-if="filterable" @clicked="showFilter = !showFilter; console.log('clicked on', header)"
         :active="active"></FilterIcon>
     {{ header.text }}
-    <div v-if="filterable" class="filter-dropdown slider-wrapper" :class="classForShowFilter" @click.stop>
+    <div v-show="filterable && showFilter" class="filter-dropdown slider-wrapper" @click.stop>
         <!-- <input type="range" class="form-control-range" v-model="value" :min="minValue" :max="maxValue"
             @input="update_filter" /> -->
         <div ref="_sliderElement"></div>
@@ -53,9 +53,6 @@ export default {
             result = true;
 
             return result;
-        },
-        classForShowFilter: function () {
-            return this.showFilter ? "" : "hidden";
         },
         active: function () {
             var result = this.value != null && this.value.length === 2 && (this.value[0] != this.minValue || this.value[1] != this.maxValue);

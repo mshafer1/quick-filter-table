@@ -217,8 +217,4 @@ export default {
 
     overflow-y: scroll;
 }
-
-.hidden {
-    display: none;
-}
 </style>

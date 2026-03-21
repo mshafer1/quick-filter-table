@@ -2,7 +2,7 @@
     <FilterIcon v-if="filterable" @clicked="showFilter = !showFilter; console.log('clicked on', header)"
         :active="active"></FilterIcon>
     {{ header.text }}
-    <div v-if="filterable && showFilter" class="filter-dropdown" @click.stop>
+    <div v-show="filterable && showFilter" class="filter-dropdown" @click.stop>
         <span><button @click="clear">&times; Clear</button></span>
         <ul type="none" class="mt-2 mb-0 ml-0">
             <li v-for="(option, index) in uniqueValues" :key="option">
