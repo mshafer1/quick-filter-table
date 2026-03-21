@@ -113,6 +113,7 @@ export default {
 <style scoped>
 .filter-dropdown {
     padding-bottom: 3em;
+    overflow-y: visible;
 }
 
 .slider-wrapper {

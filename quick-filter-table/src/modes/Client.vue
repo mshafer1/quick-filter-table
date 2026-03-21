@@ -214,6 +214,8 @@ export default {
     padding-left: 1em;
     padding-right: 1em;
     padding-top: .5em;
+
+    overflow-y: scroll;
 }
 
 .hidden {
