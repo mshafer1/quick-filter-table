@@ -27,11 +27,14 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
                     <DistinctFilter :header="header" :all_values="all_items.map(i => i[header.value])"
                         v-if="header.filter == 'distinct'" @update-filter="update_filter(header, $event)" />
                     <MultiDistinctFilter :header="header" :all_values="all_items.map(i => i[header.value])"
-                        v-if="header.filter == 'distinctMulti'" @update-filter="update_filter(header, $event)" />
+                        v-else-if="header.filter == 'distinctMulti'" @update-filter="update_filter(header, $event)" />
                     <NumberRangeFilter :header="header" :all_values="all_items.map(i => i[header.value])"
-                        v-if="header.filter == 'numberRange'" @update-filter="update_filter(header, $event)" />
+                        v-else-if="header.filter == 'numberRange'" @update-filter="update_filter(header, $event)" />
                     <TextFilter :header="header" :all_values="all_items.map(i => i[header.value])"
-                        v-if="header.filter == 'text'" @update-filter="update_filter(header, $event)" />
+                        v-else-if="header.filter == 'text'" @update-filter="update_filter(header, $event)" />
+                    <span v-else>{{ header.text }}
+                        <span v-show="false"> &#9888; Invalid filter '{{ header.filter }}'</span>
+                    </span>
                 </template>
             </Vue3EasyDataTable>
         </div>
