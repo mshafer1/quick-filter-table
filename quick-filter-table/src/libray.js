@@ -18,7 +18,6 @@ import 'bootstrap'
  */
 function renderApp(targetId, propsData = {}) {
   const targetElement = document.getElementById(targetId)
-  console.log('renderApp called with targetId:', targetId, 'propsData:', propsData)
 
   // required fields
   const headers = propsData.headers.map((header) => {
@@ -74,7 +73,7 @@ function renderApp(targetId, propsData = {}) {
     },
     mounted() {
       if (this.items_url != null) {
-        console.log('Fetching items from URL:', this.items_url)
+        console.debug('Fetching items from URL:', this.items_url)
         axios
           .get(this.items_url)
           .then((response) => {
@@ -109,7 +108,7 @@ function renderApp(targetId, propsData = {}) {
 
   // Mount the application to the target element
   app.mount(targetElement)
-  console.log(`MyCdnLibrary mounted to #${targetId}`)
+  console.debug(`QuickFilterTable mounted to #${targetId}`)
 }
 
 // Crucial: Expose the mounting function to the outside world

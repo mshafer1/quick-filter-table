@@ -96,7 +96,6 @@ export default {
             // this.refreshKey; // reference just to trigger recomputation when needed
             const result = [];
             this.filtered_headers.forEach(h => {
-                console.log("Processing header for filter options:", h);
                 if (h.filter == 'distinct' && h.filterValue !== null) {
                     result.push({
                         field: h.value,
@@ -116,10 +115,8 @@ export default {
                     });
                 }
                 if (h.filter == 'numberRange' && h.filterValue !== null && (h.filterValue[0] !== null || h.filterValue[1] !== null)) {
-                    console.log("Filter value", h.filterValue)
                     var min = h.filterValue[0]
                     var max = h.filterValue[1]
-                    console.log("Checking for numeric range filter with min:", min, "max:", max);
                     result.push({
                         field: h.value,
                         comparison: (value, criteria) => {
@@ -143,28 +140,26 @@ export default {
                     });
                 }
             })
-            console.log("Computed filter options:", result);
             return result;
         }
     },
     created() {
-        console.log('QuickFilterTable app created.')
-        console.log('Columns:', this.used_headers)
-        console.log('Items:', this.items)
+        console.debug('QuickFilterTable app created.')
+        console.debug('Columns:', this.used_headers)
+        console.debug('Items:', this.items)
     },
     methods: {
         update_search() {
-            console.log("Search value:", this.searchValue);
             debounce(() => {
                 if (this.searchValue.trim() === "") {
                     this.working_items = this.all_items;
                     return;
                 }
-                console.log("Performing fuzzy search for:", this.searchValue.trim(), "in", this.all_items, "fields:", this.header_names);
+                console.debug("Performing fuzzy search for:", this.searchValue.trim(), "in", this.all_items, "fields:", this.header_names);
                 var search_results = fuzzyFilter(this.all_items, this.searchValue.trim(), { fields: this.header_names })
-                console.log("Fuzzy search results:", search_results);
+                console.debug("Fuzzy search results:", search_results);
                 this.working_items = search_results.filter(r => r.score > 0).map(r => r.item);
-                console.log("Updated items:", this.working_items);
+                console.debug("Updated items:", this.working_items);
             }, 300)();
         },
         clear_search() {
@@ -179,7 +174,7 @@ export default {
             this.searchFocused = el == this.$refs.search;
         },
         update_filter(header, value) {
-            console.log("Updating filter for header:", header, "with value:", value);
+            console.debug("Updating filter for header:", header, "with value:", value);
             this.filtered_headers.forEach(h => {
                 if (h.value == header.value) {
                     h.filterValue = value;

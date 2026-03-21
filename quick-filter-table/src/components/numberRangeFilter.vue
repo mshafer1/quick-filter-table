@@ -1,6 +1,5 @@
 <template>
-    <FilterIcon v-if="filterable" @clicked="showFilter = !showFilter; console.log('clicked on', header)"
-        :active="active"></FilterIcon>
+    <FilterIcon v-if="filterable" @clicked="showFilter = !showFilter" :active="active"></FilterIcon>
     {{ header.text }}
     <div v-show="filterable && showFilter" class="filter-dropdown slider-wrapper" @click.stop>
         <!-- <input type="range" class="form-control-range" v-model="value" :min="minValue" :max="maxValue"
@@ -23,7 +22,6 @@ export default {
     emits: ['update-filter'],
     data: function () {
         var sorted = this.all_values.map((x) => { return parseFloat(x) }).filter((x) => { return x != NaN }).sort();
-        console.log("sorted", sorted, "all", this.all_values);
 
         var uniqueValues = sortedUniq(sorted);
         return {
@@ -56,12 +54,10 @@ export default {
         },
         active: function () {
             var result = this.value != null && this.value.length === 2 && (this.value[0] != this.minValue || this.value[1] != this.maxValue);
-            console.log("Marking filter as active:", result);
             return result;
         }
     },
     mounted() {
-        console.log("mounted")
         this.$nextTick(() => {
             const el = this.$refs._sliderElement;
 
@@ -69,7 +65,6 @@ export default {
                 console.error("Slider element ref is still undefined!");
                 return;
             }
-            console.log("creating slider with min", this.minValue, "max", this.maxValue, this.$refs._sliderElement);
             this._sliderInstance = noUiSlider.create(this.$refs._sliderElement, {
                 start: [this.minValue, this.maxValue], // Initial handle positions
                 connect: true,                        // Color the bar between handles
@@ -100,7 +95,6 @@ export default {
             var low = parseFloat(values[0]);
             var high = parseFloat(values[1]);
             this.value = [low, high];
-            console.log("update filter", low, high);
             this.$emit('update-filter', [low, high]);
         }
     }
