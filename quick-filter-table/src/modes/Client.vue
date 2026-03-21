@@ -18,8 +18,8 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
                 </div>
             </div>
             <Vue3EasyDataTable buttons-pagination :headers="used_headers" :items="working_items"
-                :rows-per-page="default_rows_per_page" table-class-name="customize-table" alternating
-                :slotNames="html_slots" :filter-options="filterOptions">
+                :rows-per-page="default_rows_per_page" :rows-items="rowsPerPageOptions" :hide-footer="hideFooter"
+                table-class-name="customize-table" alternating :slotNames="html_slots" :filter-options="filterOptions">
                 <template v-for="(field, index) in html_slots" v-slot:[`item-${field}`]="item">
                     <span v-html="item[field]"></span>
                 </template>
@@ -62,7 +62,7 @@ export default {
         NumberRangeFilter,
         TextFilter,
     },
-    props: ['headers', 'items', "loaded", 'default_rows_per_page'],
+    props: ['headers', 'items', "loaded", 'default_rows_per_page', 'rows_per_page_options'],
     data: function () {
         var headers_with_filters = this.headers.filter(h => h.filter !== null)
         headers_with_filters = headers_with_filters.map(h => {
@@ -83,6 +83,8 @@ export default {
             searchFocused: false,
             searchValue: "",
             filtered_headers: headers_with_filters,
+            hideFooter: this.rows_per_page_options == null,
+            rowsPerPageOptions: (this.rows_per_page_options == null) ? [] : this.rows_per_page_options,
             // refreshKey: 0, // just used to force computed values to refresh when needed
         }
     },
