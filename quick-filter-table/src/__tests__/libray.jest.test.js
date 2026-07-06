@@ -62,9 +62,7 @@ describe('libray.js core API', () => {
 
     renderApp('app', { headers: [] })
 
-    expect(console.error).toHaveBeenCalledWith(
-      'QuickFilterTable: items_url or items is required.',
-    )
+    expect(console.error).toHaveBeenCalledWith('QuickFilterTable: items_url or items is required.')
     expect(createApp).not.toHaveBeenCalled()
   })
 
@@ -89,10 +87,7 @@ describe('libray.js core API', () => {
     })
     expect(state.default_rows_per_page).toBe(25)
     expect(state.rows_per_page_options).toEqual([25, 50, 100])
-    expect(appInstance.component).toHaveBeenCalledWith(
-      'EasyDataTable',
-      expect.anything(),
-    )
+    expect(appInstance.component).toHaveBeenCalledWith('EasyDataTable', expect.anything())
     expect(appInstance.mount).toHaveBeenCalledWith(document.getElementById('app'))
   })
 
@@ -163,10 +158,7 @@ describe('libray.js core API', () => {
     await flushPromises()
 
     expect(axios.get).toHaveBeenCalledWith('/broken')
-    expect(console.error).toHaveBeenCalledWith(
-      'Error fetching items:',
-      expect.any(Error),
-    )
+    expect(console.error).toHaveBeenCalledWith('Error fetching items:', expect.any(Error))
     expect(state.loaded).toBe(false)
   })
 })
