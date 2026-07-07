@@ -1,6 +1,6 @@
 /**
  * Client.vue Component Tests
- * 
+ *
  * These tests cover the core filtering, search, and state management logic
  * in the Client.vue component without requiring full Vue component mounting.
  */
@@ -42,7 +42,13 @@ describe('Client.vue Component Logic', () => {
   describe('Filter Value Tracking', () => {
     test('tracks filter initialization state correctly', () => {
       const headers = [
-        { text: 'Status', value: 'status', filter: 'distinct', showFilter: undefined, filterValue: undefined },
+        {
+          text: 'Status',
+          value: 'status',
+          filter: 'distinct',
+          showFilter: undefined,
+          filterValue: undefined,
+        },
       ]
 
       // Simulate the initialization logic from component data()
@@ -137,9 +143,7 @@ describe('Client.vue Component Logic', () => {
 
       const textFilterFn = (value, searchCriteria) => {
         const compareValue =
-          searchCriteria.toLowerCase() === searchCriteria
-            ? (value || '').toLowerCase()
-            : value
+          searchCriteria.toLowerCase() === searchCriteria ? (value || '').toLowerCase() : value
         return (
           compareValue != null &&
           searchCriteria != null &&
@@ -157,9 +161,7 @@ describe('Client.vue Component Logic', () => {
 
       const textFilterFn = (value, searchCriteria) => {
         const compareValue =
-          searchCriteria.toLowerCase() === searchCriteria
-            ? (value || '').toLowerCase()
-            : value
+          searchCriteria.toLowerCase() === searchCriteria ? (value || '').toLowerCase() : value
         return (
           compareValue != null &&
           searchCriteria != null &&
@@ -187,9 +189,7 @@ describe('Client.vue Component Logic', () => {
     test('handles null/undefined values safely', () => {
       const textFilterFn = (value, searchCriteria) => {
         const compareValue =
-          searchCriteria.toLowerCase() === searchCriteria
-            ? (value || '').toLowerCase()
-            : value
+          searchCriteria.toLowerCase() === searchCriteria ? (value || '').toLowerCase() : value
         return (
           compareValue != null &&
           searchCriteria != null &&
