@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+
+
+## [1.1.4] - 2026-07-08
+
+### Changed
 - Added Jest test infrastructure and new test work in progress (`copilot: setup tests`, `copilot: tests`, and follow-up overhaul).
 - Updated package version metadata after `1.1.3` (`update version number`).
 - Make changing search value reset the current page to 1
@@ -58,7 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - First full published release.
 
-[Unreleased]: https://github.com/mshafer1/quick-filter-table/compare/1.1.3...main
+[Unreleased]: https://github.com/mshafer1/quick-filter-table/compare/1.1.4...main
+[1.1.4]: https://github.com/mshafer1/quick-filter-table/compare/1.1.3...1.1.4
 [1.1.3]: https://github.com/mshafer1/quick-filter-table/compare/1.1.2...1.1.3
 [1.1.2]: https://github.com/mshafer1/quick-filter-table/compare/1.1.1...1.1.2
 [1.1.1]: https://github.com/mshafer1/quick-filter-table/compare/1.1.0...1.1.1
