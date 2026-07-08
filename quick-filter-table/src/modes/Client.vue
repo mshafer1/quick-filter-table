@@ -13,13 +13,14 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
                     @input="update_search" @focus="focusChanged" @blur="focusChanged"
                     :class="{ 'focused': searchFocused }" placeholder="Search..." />
                 <div class="input-group-append">
-                    <button type="button" class="btn btn-primary" v-if="searchValue" @click="clear_search"
-                        for="search">&times;</button>
+                    <button type="button" title="clear search" class="btn btn-primary" v-if="searchValue"
+                        @click="clear_search" for="search">&times;</button>
                 </div>
             </div>
             <Vue3EasyDataTable buttons-pagination :headers="used_headers" :items="working_items"
                 :rows-per-page="default_rows_per_page" :rows-items="rowsPerPageOptions" :hide-footer="hideFooter"
-                table-class-name="customize-table" alternating :slotNames="html_slots" :filter-options="filterOptions">
+                table-class-name="customize-table" alternating :slotNames="html_slots" :filter-options="filterOptions"
+                :key="pageResetFlag">
                 <template v-for="(field, index) in html_slots" v-slot:[`item-${field}`]="item">
                     <span v-html="item[field]"></span>
                 </template>
@@ -85,6 +86,7 @@ export default {
             filtered_headers: headers_with_filters,
             hideFooter: this.rows_per_page_options == null,
             rowsPerPageOptions: (this.rows_per_page_options == null) ? [] : this.rows_per_page_options,
+            pageResetFlag: 1,
             // refreshKey: 0, // just used to force computed values to refresh when needed
         }
     },
@@ -161,6 +163,7 @@ export default {
                 var search_results = fuzzyFilter(this.all_items, this.searchValue.trim(), { fields: this.header_names })
                 console.debug("Fuzzy search results:", search_results);
                 this.working_items = search_results.filter(r => r.score > 0).map(r => r.item);
+                this.pageResetFlag += 1; // reset to first page after search
                 console.debug("Updated items:", this.working_items);
             }, 300)();
         },
