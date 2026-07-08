@@ -195,4 +195,45 @@ describe('Client.vue Component Interaction', () => {
     expect(screen.getAllByRole('row')).toHaveLength(13) // 1 header row + 1 data row
     expect(screen.getByText('Item 1')).toBeInTheDocument()
   })
+
+  test('Searching large dataset with null and numbers does not throw errors', async () => {
+    const largeItems = Array.from({ length: 1000 }, (_, i) => ({
+      name: `Item ${i + 1}`,
+      status: i % 2 === 0 ? 'active' : 'inactive',
+      value: i % 5, // integers
+      count_me_in: i % 3 === 0 ? null : i % 2 === 0, // nulls and booleans
+      html: `<div>Item - ${i + 1}</div>`, // HTML content
+    }))
+
+    renderClient({
+      items: largeItems,
+      headers: [
+        { text: 'Name', value: 'name', filter: null },
+        { text: 'Status', value: 'status', filter: 'distinct' },
+        { text: 'Value', value: 'value', filter: null },
+        { text: 'Count Me In', value: 'count_me_in', filter: null },
+        { text: 'HTML', value: 'html', filter: null, html: true },
+      ],
+    })
+
+    const searchInput = screen.getByPlaceholderText('Search...')
+    await fireEvent.update(searchInput, 'Item 10')
+    expect(screen.getByText('Item 10')).toBeInTheDocument()
+  })
+
+  test('text filter comparison succeeds even when value is truthy non-string and criteria is lowercase', () => {
+    const textHeader = {
+      text: 'Score',
+      value: 'score',
+      filter: 'text',
+      filterValue: 'abc',
+    }
+
+    const filterOptions = Client.computed.filterOptions.call({
+      filtered_headers: [textHeader],
+    })
+
+    expect(filterOptions).toHaveLength(1)
+    filterOptions[0].comparison(123, 'abc')
+  })
 })
