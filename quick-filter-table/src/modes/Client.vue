@@ -111,9 +111,10 @@ export default {
                     result.push({
                         field: h.value,
                         comparison: (value, criteria) => {
-                            var compareValue = (criteria.toLowerCase() == criteria) ? (value || "").toLowerCase() : value;
-                            return compareValue != null && criteria != null &&
-                                typeof compareValue === 'string' && compareValue.includes(criteria.trim())
+                            if (typeof criteria !== "string") { criteria = String(criteria); }
+                            const raw = value == null ? "" : String(value);
+                            const compareValue = criteria.toLowerCase() === criteria ? raw.toLowerCase() : raw;
+                            return compareValue.includes(criteria.trim());
                         },
                         criteria: h.filterValue,
                     });
