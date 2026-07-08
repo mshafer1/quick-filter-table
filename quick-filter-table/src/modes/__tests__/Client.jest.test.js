@@ -8,7 +8,6 @@
 import { defineComponent } from 'vue'
 import { fireEvent, render, screen } from '@testing-library/vue'
 import Client from '../Client.vue'
-import { fuzzyFilter } from 'fuzzbunny'
 
 jest.mock('lodash/debounce', () => (fn) => fn)
 
