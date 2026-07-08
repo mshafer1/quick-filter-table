@@ -1,3 +1,5 @@
+import '@testing-library/jest-dom'
+
 // Mock Bootstrap
 jest.mock('bootstrap', () => ({}))
 jest.mock('bootstrap/dist/js/bootstrap.bundle.min.js', () => ({}))

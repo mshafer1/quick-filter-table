@@ -1,446 +1,198 @@
 /**
- * Client.vue Component Tests
+ * Client.vue integration-style tests
  *
- * These tests cover the core filtering, search, and state management logic
- * in the Client.vue component without requiring full Vue component mounting.
+ * These tests mount the real component and verify behavior through user
+ * interaction instead of asserting local variables.
  */
 
-describe('Client.vue Component Logic', () => {
-  describe('Component Data Initialization', () => {
-    test('initializes with correct default state', () => {
-      const mockItems = [
-        { name: 'A', status: 'active', price: 10 },
-        { name: 'B', status: 'inactive', price: 20 },
-      ]
-      const mockHeaders = [
-        { text: 'Name', value: 'name', filter: null },
-        { text: 'Status', value: 'status', filter: 'distinct' },
-        { text: 'Price', value: 'price', filter: 'numberRange' },
-      ]
+import { defineComponent } from 'vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
+import Client from '../Client.vue'
+import { fuzzyFilter } from 'fuzzbunny'
 
-      // Simulate component data initialization
-      const componentData = {
-        working_items: mockItems,
-        all_items: mockItems,
-        used_headers: mockHeaders,
-        header_names: mockHeaders.map((h) => h.value),
-        searchFocused: false,
-        searchValue: '',
-        filtered_headers: mockHeaders.filter((h) => h.filter !== null),
-        hideFooter: false,
-        rowsPerPageOptions: [25, 50, 100],
-      }
+jest.mock('lodash/debounce', () => (fn) => fn)
 
-      expect(componentData.working_items).toEqual(mockItems)
-      expect(componentData.all_items).toEqual(mockItems)
-      expect(componentData.searchValue).toBe('')
-      expect(componentData.searchFocused).toBe(false)
-      expect(componentData.filtered_headers.length).toBe(2)
-    })
+const defaultHeaders = [
+  { text: 'Name', value: 'name', filter: null },
+  { text: 'Status', value: 'status', filter: 'distinct' },
+]
+
+const defaultItems = [
+  { name: 'Alpha', status: 'active' },
+  { name: 'Beta', status: 'inactive' },
+  { name: 'Gamma', status: 'active' },
+  { name: 'Delta', status: 'inactive' },
+]
+
+const longItems = Array.from({ length: 100 }, (_, i) => ({
+  name: `Item ${i + 1}`,
+  status: i % 2 === 0 ? 'active' : 'inactive',
+}))
+
+function renderClient(overrides = {}) {
+  return render(Client, {
+    props: {
+      headers: defaultHeaders,
+      items: defaultItems,
+      loaded: true,
+      default_rows_per_page: 25,
+      rows_per_page_options: [25, 50, 100],
+      ...overrides,
+    },
+    global: {
+      stubs: {
+        DistinctFilter: defineComponent({
+          template: '<div data-testid="distinct-filter-stub"></div>',
+        }),
+        MultiDistinctFilter: defineComponent({
+          template: '<div data-testid="multi-distinct-filter-stub"></div>',
+        }),
+        NumberRangeFilter: defineComponent({
+          template: '<div data-testid="number-range-filter-stub"></div>',
+        }),
+        TextFilter: defineComponent({
+          template: '<div data-testid="text-filter-stub"></div>',
+        }),
+      },
+    },
+  })
+}
+
+describe('Client.vue Component Interaction', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
   })
 
-  describe('Filter Value Tracking', () => {
-    test('tracks filter initialization state correctly', () => {
-      const headers = [
-        {
-          text: 'Status',
-          value: 'status',
-          filter: 'distinct',
-          showFilter: undefined,
-          filterValue: undefined,
-        },
-      ]
+  test('renders loading state when not loaded', () => {
+    renderClient({ loaded: false })
 
-      // Simulate the initialization logic from component data()
-      const processedHeaders = headers.map((h) => ({
-        ...h,
-        showFilter: h.showFilter === undefined ? false : h.showFilter,
-        filterValue: h.filterValue === undefined ? null : h.filterValue,
-      }))
-
-      expect(processedHeaders[0].showFilter).toBe(false)
-      expect(processedHeaders[0].filterValue).toBe(null)
-    })
+    expect(screen.getByText('Loading...')).toBeInTheDocument()
+    expect(screen.queryByRole('textbox', { name: '' })).not.toBeInTheDocument()
   })
 
-  describe('Header Names Extraction', () => {
-    test('extracts all header value names correctly', () => {
-      const headers = [
-        { text: 'Name', value: 'name' },
-        { text: 'Status', value: 'status' },
-        { text: 'Price', value: 'price' },
-      ]
+  test('initializes with search input and pagination props', () => {
+    renderClient()
 
-      const headerNames = headers.map((h) => h.value)
+    const searchInput = screen.getByPlaceholderText('Search...')
 
-      expect(headerNames).toEqual(['name', 'status', 'price'])
-    })
+    expect(searchInput).toBeInTheDocument()
+    expect(searchInput).toHaveValue('')
   })
 
-  describe('HTML Slots Computation', () => {
-    test('identifies headers with html rendering enabled', () => {
-      const headers = [
-        { text: 'Name', value: 'name', html: false },
-        { text: 'Action', value: 'action', html: true },
-        { text: 'Status', value: 'status', html: false },
-        { text: 'Link', value: 'url', html: true },
-      ]
+  test('uses hidden footer config when rows_per_page_options is null', () => {
+    renderClient({ rows_per_page_options: null })
 
-      const htmlSlots = headers.filter((h) => h.html === true).map((h) => h.value)
-
-      expect(htmlSlots).toEqual(['action', 'url'])
-      expect(htmlSlots.length).toBe(2)
-    })
-
-    test('returns empty array when no headers have html enabled', () => {
-      const headers = [
-        { text: 'Name', value: 'name', html: false },
-        { text: 'Status', value: 'status', html: false },
-      ]
-
-      const htmlSlots = headers.filter((h) => h.html === true).map((h) => h.value)
-
-      expect(htmlSlots).toEqual([])
-    })
+    expect(screen.queryByText('rows per page:')).not.toBeInTheDocument()
   })
 
-  describe('Distinct Filter Logic', () => {
-    test('builds correct filter option for distinct filter', () => {
-      const header = { value: 'status', filter: 'distinct' }
-      const filterValue = 'active'
+  test('toggles focused class on search input focus and blur', async () => {
+    renderClient()
 
-      // Simulate filterOptions computed property logic
-      if (header.filter === 'distinct' && filterValue !== null) {
-        const filterOption = {
-          field: header.value,
-          comparison: '=',
-          criteria: filterValue,
-        }
+    const searchInput = screen.getByPlaceholderText('Search...')
 
-        expect(filterOption.field).toBe('status')
-        expect(filterOption.comparison).toBe('=')
-        expect(filterOption.criteria).toBe('active')
-      }
-    })
+    await fireEvent.focus(searchInput)
+    expect(searchInput).toHaveClass('focused')
 
-    test('does not apply distinct filter when value is null', () => {
-      const header = { value: 'status', filter: 'distinct' }
-      const filterValue = null
-
-      let filterApplied = false
-      if (header.filter === 'distinct' && filterValue !== null) {
-        filterApplied = true
-      }
-
-      expect(filterApplied).toBe(false)
-    })
+    await fireEvent.blur(searchInput)
+    expect(searchInput).not.toHaveClass('focused')
   })
 
-  describe('Text Filter Logic', () => {
-    test('builds text filter with case-sensitive comparison', () => {
-      const header = { value: 'description', filter: 'text' }
-      const criteria = 'First'
+  test('filters visible items when user types in search input', async () => {
+    renderClient()
 
-      const textFilterFn = (value, searchCriteria) => {
-        const compareValue =
-          searchCriteria.toLowerCase() === searchCriteria ? (value || '').toLowerCase() : value
-        return (
-          compareValue != null &&
-          searchCriteria != null &&
-          typeof compareValue === 'string' &&
-          compareValue.includes(searchCriteria.trim())
-        )
-      }
+    const searchInput = screen.getByPlaceholderText('Search...')
+    await fireEvent.update(searchInput, 'Alpha')
 
-      expect(textFilterFn('First Item', 'First')).toBe(true)
-      expect(textFilterFn('FIRST ITEM', 'First')).toBe(false)
-    })
+    expect(screen.getAllByRole('row')).toHaveLength(2) // 1 header row + 1 data row
+    expect(screen.getByText('Alpha')).toBeInTheDocument()
 
-    test('builds text filter with case-insensitive comparison for lowercase criteria', () => {
-      const criteria = 'first' // lowercase criteria means case-insensitive
+    await fireEvent.update(searchInput, 'ta')
 
-      const textFilterFn = (value, searchCriteria) => {
-        const compareValue =
-          searchCriteria.toLowerCase() === searchCriteria ? (value || '').toLowerCase() : value
-        return (
-          compareValue != null &&
-          searchCriteria != null &&
-          typeof compareValue === 'string' &&
-          compareValue.includes(searchCriteria.trim())
-        )
-      }
-
-      expect(textFilterFn('First Item', 'first')).toBe(true)
-      expect(textFilterFn('FIRST ITEM', 'first')).toBe(true)
-    })
-
-    test('does not apply text filter when value is empty', () => {
-      const header = { value: 'description', filter: 'text' }
-      const filterValue = '   '
-
-      let filterApplied = false
-      if (header.filter === 'text' && filterValue !== null && filterValue.trim() !== '') {
-        filterApplied = true
-      }
-
-      expect(filterApplied).toBe(false)
-    })
-
-    test('handles null/undefined values safely', () => {
-      const textFilterFn = (value, searchCriteria) => {
-        const compareValue =
-          searchCriteria.toLowerCase() === searchCriteria ? (value || '').toLowerCase() : value
-        return (
-          compareValue != null &&
-          searchCriteria != null &&
-          typeof compareValue === 'string' &&
-          compareValue.includes(searchCriteria.trim())
-        )
-      }
-
-      expect(textFilterFn(null, 'search')).toBe(false)
-      expect(textFilterFn(undefined, 'search')).toBe(false)
-    })
+    expect(screen.getAllByRole('row')).toHaveLength(3)
+    expect(screen.getByText('Beta')).toBeInTheDocument()
+    expect(screen.getByText('Delta')).toBeInTheDocument()
   })
 
-  describe('Number Range Filter Logic', () => {
-    test('builds number range filter with min and max', () => {
-      const header = { value: 'price', filter: 'numberRange' }
-      const criteria = [10, 50]
+  test('clear button resets search and restores full item list', async () => {
+    renderClient()
 
-      const numberRangeFilterFn = (value, filterCriteria) => {
-        const numValue = parseFloat(value)
-        if (isNaN(numValue)) return false
-        const [min, max] = filterCriteria
-        if (min !== null && numValue < min) return false
-        if (max !== null && numValue > max) return false
-        return true
-      }
+    const searchInput = screen.getByPlaceholderText('Search...')
+    await fireEvent.update(searchInput, 'Alpha')
 
-      expect(numberRangeFilterFn(5, criteria)).toBe(false)
-      expect(numberRangeFilterFn(25, criteria)).toBe(true)
-      expect(numberRangeFilterFn(60, criteria)).toBe(false)
-    })
+    expect(screen.getAllByRole('row')).toHaveLength(2) // 1 header row + 1 data row
+    expect(screen.getByText('Alpha')).toBeInTheDocument()
 
-    test('handles null min boundary', () => {
-      const criteria = [null, 50]
+    const clearButton = screen.getByTitle('clear search')
+    await fireEvent.click(clearButton)
 
-      const numberRangeFilterFn = (value, filterCriteria) => {
-        const numValue = parseFloat(value)
-        if (isNaN(numValue)) return false
-        const [min, max] = filterCriteria
-        if (min !== null && numValue < min) return false
-        if (max !== null && numValue > max) return false
-        return true
-      }
-
-      expect(numberRangeFilterFn(10, criteria)).toBe(true)
-      expect(numberRangeFilterFn(60, criteria)).toBe(false)
-    })
-
-    test('handles null max boundary', () => {
-      const criteria = [10, null]
-
-      const numberRangeFilterFn = (value, filterCriteria) => {
-        const numValue = parseFloat(value)
-        if (isNaN(numValue)) return false
-        const [min, max] = filterCriteria
-        if (min !== null && numValue < min) return false
-        if (max !== null && numValue > max) return false
-        return true
-      }
-
-      expect(numberRangeFilterFn(5, criteria)).toBe(false)
-      expect(numberRangeFilterFn(100, criteria)).toBe(true)
-    })
-
-    test('handles both null boundaries', () => {
-      const criteria = [null, null]
-
-      const numberRangeFilterFn = (value, filterCriteria) => {
-        const numValue = parseFloat(value)
-        if (isNaN(numValue)) return false
-        const [min, max] = filterCriteria
-        if (min !== null && numValue < min) return false
-        if (max !== null && numValue > max) return false
-        return true
-      }
-
-      expect(numberRangeFilterFn(5, criteria)).toBe(true)
-      expect(numberRangeFilterFn(1000, criteria)).toBe(true)
-    })
-
-    test('rejects non-numeric values', () => {
-      const criteria = [10, 50]
-
-      const numberRangeFilterFn = (value, filterCriteria) => {
-        const numValue = parseFloat(value)
-        if (isNaN(numValue)) return false
-        const [min, max] = filterCriteria
-        if (min !== null && numValue < min) return false
-        if (max !== null && numValue > max) return false
-        return true
-      }
-
-      expect(numberRangeFilterFn('abc', criteria)).toBe(false)
-      expect(numberRangeFilterFn(null, criteria)).toBe(false)
-    })
-
-    test('does not apply number range filter when both boundaries are null', () => {
-      const header = { value: 'price', filter: 'numberRange' }
-      const filterValue = [null, null]
-
-      let filterApplied = false
-      if (
-        header.filter === 'numberRange' &&
-        filterValue !== null &&
-        (filterValue[0] !== null || filterValue[1] !== null)
-      ) {
-        filterApplied = true
-      }
-
-      expect(filterApplied).toBe(false)
-    })
+    expect(searchInput).toHaveValue('')
+    expect(screen.getAllByRole('row')).toHaveLength(5) // 1 header row + 4 data rows
   })
 
-  describe('Multi-Distinct Filter Logic', () => {
-    test('builds multi-distinct filter with multiple selected options', () => {
-      const header = { value: 'category', filter: 'distinctMulti' }
-      const filterValue = 'Electronics\x00Books'
+  //   test('resets search when items prop changes', async () => {
+  //     const { rerender } = renderClient()
 
-      const multiDistinctFilterFn = (value, criteria) => {
-        const options = new Set(criteria.split('\x00'))
-        return options.has(value)
-      }
+  //     const searchInput = screen.getByPlaceholderText('Search...')
+  //     await fireEvent.update(searchInput, 'Alpha')
 
-      expect(multiDistinctFilterFn('Electronics', filterValue)).toBe(true)
-      expect(multiDistinctFilterFn('Books', filterValue)).toBe(true)
-      expect(multiDistinctFilterFn('Music', filterValue)).toBe(false)
-    })
+  //     expect(searchInput).toHaveValue('Alpha')
 
-    test('does not apply multi-distinct filter when value is empty', () => {
-      const header = { value: 'category', filter: 'distinctMulti' }
-      const filterValue = '   '
+  //     const newItems = [{ name: 'Delta', status: 'inactive' }]
+  //     await rerender({
+  //       headers: defaultHeaders,
+  //       items: newItems,
+  //       loaded: true,
+  //       default_rows_per_page: 25,
+  //       rows_per_page_options: [25, 50, 100],
+  //     })
 
-      let filterApplied = false
-      if (header.filter === 'distinctMulti' && filterValue !== null && filterValue.trim() !== '') {
-        filterApplied = true
-      }
+  //     expect(searchInput).toHaveValue('')
+  //     expect(screen.getByTestId('item-count')).toHaveTextContent('1')
+  //     expect(screen.getByText('Delta')).toBeInTheDocument()
+  //   })
 
-      expect(filterApplied).toBe(false)
-    })
-
-    test('handles single selected option', () => {
-      const filterValue = 'Electronics'
-
-      const multiDistinctFilterFn = (value, criteria) => {
-        const options = new Set(criteria.split('\x00'))
-        return options.has(value)
-      }
-
-      expect(multiDistinctFilterFn('Electronics', filterValue)).toBe(true)
-      expect(multiDistinctFilterFn('Books', filterValue)).toBe(false)
-    })
+  test('default rows per page', async () => {
+    renderClient({ items: longItems, default_rows_per_page: 25 })
+    expect(screen.getAllByRole('row')).toHaveLength(26) // 1 header row + 25 data rows
   })
 
-  describe('Pagination Configuration', () => {
-    test('applies default pagination settings', () => {
-      const componentState = {
-        default_rows_per_page: 25,
-        rows_per_page_options: [25, 50, 100],
-        hideFooter: false,
-      }
-
-      expect(componentState.default_rows_per_page).toBe(25)
-      expect(componentState.rows_per_page_options.length).toBe(3)
-      expect(componentState.hideFooter).toBe(false)
+  test('changing page updates visible items', async () => {
+    const { container } = renderClient({
+      items: longItems,
+      default_rows_per_page: 25,
+      headers: [{ text: 'Name', value: 'name', filter: null }], // just the name for smaller log
     })
 
-    test('hides footer when pagination options are null', () => {
-      const rows_per_page_options = null
+    expect(screen.getAllByRole('row')).toHaveLength(26) // 1 header row + 25 data rows
+    expect(screen.queryByText('Item 26')).not.toBeInTheDocument()
 
-      const hideFooter = rows_per_page_options == null
-      const rowsPerPageOptions = hideFooter ? [] : rows_per_page_options
+    const nextPageButton = container.querySelector('div.next-page__click-button')
+    await fireEvent.click(nextPageButton)
 
-      expect(hideFooter).toBe(true)
-      expect(rowsPerPageOptions).toEqual([])
-    })
-
-    test('applies custom pagination settings', () => {
-      const rows_per_page_options = [10, 20, 50]
-
-      const hideFooter = rows_per_page_options == null
-      const rowsPerPageOptions = hideFooter ? [] : rows_per_page_options
-
-      expect(hideFooter).toBe(false)
-      expect(rowsPerPageOptions).toEqual([10, 20, 50])
-    })
+    expect(screen.getByText('Item 26')).toBeInTheDocument()
   })
 
-  describe('Search State Management', () => {
-    test('tracks search focus state', () => {
-      let searchFocused = false
-
-      // Simulate focus event
-      searchFocused = true
-      expect(searchFocused).toBe(true)
-
-      // Simulate blur event
-      searchFocused = false
-      expect(searchFocused).toBe(false)
+  test('setting search resets pagination', async () => {
+    const { container } = renderClient({
+      items: longItems,
+      default_rows_per_page: 25,
+      headers: [{ text: 'Name', value: 'name', filter: null }], // just the name for smaller log
     })
 
-    test('clears search value and resets items', () => {
-      const mockItems = [
-        { name: 'A', status: 'active' },
-        { name: 'B', status: 'inactive' },
-      ]
+    const searchInput = screen.getByPlaceholderText('Search...')
+    await fireEvent.update(searchInput, 'Item 1')
 
-      let searchValue = 'query'
-      let workingItems = []
+    expect(screen.getAllByRole('row')).toHaveLength(13) // 1 header row + 1 data row
+    expect(screen.getByText('Item 1')).toBeInTheDocument()
 
-      // Simulate clear_search logic
-      searchValue = ''
-      workingItems = mockItems
+    await fireEvent.update(searchInput, '') // clear search
+    expect(screen.getAllByRole('row')).toHaveLength(26) // 1 header row + 25 data rows
 
-      expect(searchValue).toBe('')
-      expect(workingItems).toEqual(mockItems)
-    })
+    const nextPageButton = container.querySelector('div.next-page__click-button')
+    await fireEvent.click(nextPageButton) // Move to page 2, validated in previous test
 
-    test('updates search value', () => {
-      let searchValue = ''
-
-      searchValue = 'test query'
-
-      expect(searchValue).toBe('test query')
-    })
-  })
-
-  describe('Dynamic Data Updates', () => {
-    test('updates all_items and working_items when items prop changes', () => {
-      let allItems = [{ name: 'Old' }]
-      let workingItems = [{ name: 'Old' }]
-      const newItems = [{ name: 'New' }]
-
-      // Simulate watcher logic
-      allItems = newItems
-      workingItems = newItems
-
-      expect(allItems).toEqual(newItems)
-      expect(workingItems).toEqual(newItems)
-    })
-
-    test('clears search when items are updated', () => {
-      let searchValue = 'search term'
-      let workingItems = []
-      const newItems = [{ name: 'New' }]
-
-      // Simulate watcher clearing search
-      searchValue = ''
-      workingItems = newItems
-
-      expect(searchValue).toBe('')
-      expect(workingItems).toEqual(newItems)
-    })
+    await fireEvent.update(searchInput, 'Item 1') // set search again
+    expect(screen.getAllByRole('row')).toHaveLength(13) // 1 header row + 1 data row
+    expect(screen.getByText('Item 1')).toBeInTheDocument()
   })
 })

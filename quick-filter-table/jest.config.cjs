@@ -13,6 +13,7 @@ module.exports = {
   },
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@vue/test-utils$': '<rootDir>/node_modules/@vue/test-utils/dist/vue-test-utils.cjs.js',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '^bootstrap$': '<rootDir>/test/jest-stubs/bootstrap.js',
   },
