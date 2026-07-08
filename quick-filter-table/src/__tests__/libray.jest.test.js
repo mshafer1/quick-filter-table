@@ -23,11 +23,11 @@ jest.mock('vue', () => {
 
 import axios from 'axios'
 import { createApp } from 'vue'
-import { QuickFilterTable, renderApp } from '../libray.js'
+import { QuickFilterTable, renderApp } from '../library.js'
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
-describe('libray.js core API', () => {
+describe('library.js core API', () => {
   let errorSpy
   let debugSpy
 
