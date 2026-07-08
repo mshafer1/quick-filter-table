@@ -103,18 +103,28 @@ export default {
                 if (h.filter == 'distinct' && h.filterValue !== null) {
                     result.push({
                         field: h.value,
-                        comparison: '=',
+                        comparison: (value, criteria) => {
+                            try {
+                                return value == criteria;
+                            } catch (e) {
+                                return false;
+                            }
+                        },
                         criteria: h.filterValue
                     });
                 }
-                if (h.filter == 'text' && h.filterValue !== null && h.filterValue.trim() !== "") {
+                if (h.filter == 'text' && h.filterValue !== null && String(h.filterValue).trim() !== "") {
                     result.push({
                         field: h.value,
                         comparison: (value, criteria) => {
-                            if (typeof criteria !== "string") { criteria = String(criteria); }
-                            const raw = value == null ? "" : String(value);
-                            const compareValue = criteria.toLowerCase() === criteria ? raw.toLowerCase() : raw;
-                            return compareValue.includes(criteria.trim());
+                            try {
+                                if (typeof criteria !== "string") { criteria = String(criteria); }
+                                const raw = value == null ? "" : String(value);
+                                const compareValue = criteria.toLowerCase() === criteria ? raw.toLowerCase() : raw;
+                                return compareValue.includes(criteria.trim());
+                            } catch (e) {
+                                return false;
+                            }
                         },
                         criteria: h.filterValue,
                     });
@@ -125,21 +135,29 @@ export default {
                     result.push({
                         field: h.value,
                         comparison: (value, criteria) => {
-                            var numValue = parseFloat(value);
-                            if (isNaN(numValue)) return false;
-                            if (min !== null && numValue < min) return false;
-                            if (max !== null && numValue > max) return false;
-                            return true;
+                            try {
+                                var numValue = parseFloat(value);
+                                if (isNaN(numValue)) return false;
+                                if (min !== null && numValue < min) return false;
+                                if (max !== null && numValue > max) return false;
+                                return true;
+                            } catch (e) {
+                                return false;
+                            }
                         },
                         criteria: h.filterValue,
                     });
                 }
-                if (h.filter == 'distinctMulti' && h.filterValue !== null && h.filterValue.trim() !== "") {
-                    var options = new Set(h.filterValue.split('\x00'));
+                if (h.filter == 'distinctMulti' && h.filterValue !== null && String(h.filterValue).trim() !== "") {
+                    var options = new Set(String(h.filterValue).split('\x00'));
                     result.push({
                         field: h.value,
                         comparison: (value, criteria) => {
-                            return options.has(value);
+                            try {
+                                return options.has(value);
+                            } catch (e) {
+                                return false;
+                            }
                         },
                         criteria: h.filterValue,
                     });
