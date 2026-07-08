@@ -172,8 +172,7 @@ export default {
             } catch (e) { }
         },
         focusChanged(event) {
-            var el = event.target;
-            this.searchFocused = el == this.$refs.search;
+            this.searchFocused = event.type === 'focus';
         },
         update_filter(header, value) {
             console.debug("Updating filter for header:", header, "with value:", value);
