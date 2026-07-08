@@ -31,7 +31,7 @@ export default defineConfig({
         // globals: {
         //   vue: 'Vue',
         // },
-        external: [],
+        // external: [],
       },
     },
   },
