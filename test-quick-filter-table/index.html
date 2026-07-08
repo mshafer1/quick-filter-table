@@ -50,6 +50,21 @@
                     { text: "City", value: "city", filter: "distinctMulti" },
                 ],
             });
+
+            QuickFilterTable.renderApp("app3", {
+                items_url: "test_large_set.json",
+                items_key: "feed.items",
+                default_rows_per_page: 10,
+                items_map: function (item) {
+                    item.name = `${item.last_name}, ${item.first_name}`
+                    return item
+                },
+                headers: [
+                    { text: "Name", value: "name", filter: "distinct" },
+                    { text: "Age", value: "age", filter: "numberRange" },
+                    { text: "City", value: "city", filter: "distinctMulti" },
+                ],
+            });
         }
 
         window.addEventListener("DOMContentLoaded", init);
@@ -60,6 +75,9 @@
     <div id="app1"></div>
     <div style="height: 10em;">This space intentionally left blank</div>
     <div id="app2"></div>
+    <div style="height: 10em;">This space intentionally left blank</div>
+    <div id="app3"></div>
+
 </body>
 
 </html>
