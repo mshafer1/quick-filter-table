@@ -176,13 +176,14 @@ export default {
             debounce(() => {
                 if (this.searchValue.trim() === "") {
                     this.working_items = this.all_items;
+                    this.pageResetFlag += 1; // reset to first page when search changes
                     return;
                 }
                 console.debug("Performing fuzzy search for:", this.searchValue.trim(), "in", this.all_items, "fields:", this.header_names);
                 var search_results = fuzzyFilter(this.all_items, this.searchValue.trim(), { fields: this.header_names })
                 console.debug("Fuzzy search results:", search_results);
                 this.working_items = search_results.filter(r => r.score > 0).map(r => r.item);
-                this.pageResetFlag += 1; // reset to first page after search
+                this.pageResetFlag += 1; // reset to first page when search changes
                 console.debug("Updated items:", this.working_items);
             }, 300)();
         },
