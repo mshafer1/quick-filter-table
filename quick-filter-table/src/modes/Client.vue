@@ -14,7 +14,7 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
                     :class="{ 'focused': searchFocused }" placeholder="Search..." />
                 <div class="input-group-append">
                     <button type="button" title="clear search" class="btn btn-primary" v-if="searchValue"
-                        @click="clear_search" for="search">&times;</button>
+                        @click="clear_search" aria-label="Clear search">&times;</button>
                 </div>
             </div>
             <Vue3EasyDataTable buttons-pagination :headers="used_headers" :items="working_items"
