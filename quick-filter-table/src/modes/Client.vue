@@ -87,6 +87,7 @@ export default {
             hideFooter: this.rows_per_page_options == null,
             rowsPerPageOptions: (this.rows_per_page_options == null) ? [] : this.rows_per_page_options,
             pageResetFlag: 1,
+            searchDebounced: null,
             // refreshKey: 0, // just used to force computed values to refresh when needed
         }
     },
@@ -171,22 +172,28 @@ export default {
         console.debug('QuickFilterTable app created.')
         console.debug('Columns:', this.used_headers)
         console.debug('Items:', this.items)
+        this.searchDebounced = debounce(() => {
+            if (this.searchValue.trim() === "") {
+                this.working_items = this.all_items;
+                this.pageResetFlag += 1; // reset to first page when search changes
+                return;
+            }
+            console.debug("Performing fuzzy search for:", this.searchValue.trim(), "in", this.all_items, "fields:", this.header_names);
+            var search_results = fuzzyFilter(this.all_items, this.searchValue.trim(), { fields: this.header_names })
+            console.debug("Fuzzy search results:", search_results);
+            this.working_items = search_results.filter(r => r.score > 0).map(r => r.item);
+            this.pageResetFlag += 1; // reset to first page when search changes
+            console.debug("Updated items:", this.working_items);
+        }, 300);
+    },
+    beforeUnmount() {
+        if (this.searchDebounced && typeof this.searchDebounced.cancel === "function") {
+            this.searchDebounced.cancel();
+        }
     },
     methods: {
         update_search() {
-            debounce(() => {
-                if (this.searchValue.trim() === "") {
-                    this.working_items = this.all_items;
-                    this.pageResetFlag += 1; // reset to first page when search changes
-                    return;
-                }
-                console.debug("Performing fuzzy search for:", this.searchValue.trim(), "in", this.all_items, "fields:", this.header_names);
-                var search_results = fuzzyFilter(this.all_items, this.searchValue.trim(), { fields: this.header_names })
-                console.debug("Fuzzy search results:", search_results);
-                this.working_items = search_results.filter(r => r.score > 0).map(r => r.item);
-                this.pageResetFlag += 1; // reset to first page when search changes
-                console.debug("Updated items:", this.working_items);
-            }, 300)();
+            this.searchDebounced();
         },
         clear_search() {
             this.searchValue = "";
