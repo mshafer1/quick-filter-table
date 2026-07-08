@@ -22,7 +22,7 @@ export default defineConfig({
   formats: ['umd', 'iife'],
   build: {
     lib: {
-      entry: fileURLToPath(new URL('./src/libray.js', import.meta.url)),
+      entry: fileURLToPath(new URL('./src/library.js', import.meta.url)),
       name: 'QuickFilterTable',
       fileName: (format) => `quick-filter-table.js`,
     },
@@ -31,7 +31,7 @@ export default defineConfig({
         // globals: {
         //   vue: 'Vue',
         // },
-        external: [],
+        // external: [],
       },
     },
   },

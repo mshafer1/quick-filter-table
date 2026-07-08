@@ -13,13 +13,14 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
                     @input="update_search" @focus="focusChanged" @blur="focusChanged"
                     :class="{ 'focused': searchFocused }" placeholder="Search..." />
                 <div class="input-group-append">
-                    <button type="button" class="btn btn-primary" v-if="searchValue" @click="clear_search"
-                        for="search">&times;</button>
+                    <button type="button" title="clear search" class="btn btn-primary" v-if="searchValue"
+                        @click="clear_search" aria-label="Clear search">&times;</button>
                 </div>
             </div>
             <Vue3EasyDataTable buttons-pagination :headers="used_headers" :items="working_items"
                 :rows-per-page="default_rows_per_page" :rows-items="rowsPerPageOptions" :hide-footer="hideFooter"
-                table-class-name="customize-table" alternating :slotNames="html_slots" :filter-options="filterOptions">
+                table-class-name="customize-table" alternating :slotNames="html_slots" :filter-options="filterOptions"
+                :key="pageResetFlag">
                 <template v-for="(field, index) in html_slots" v-slot:[`item-${field}`]="item">
                     <span v-html="item[field]"></span>
                 </template>
@@ -85,6 +86,8 @@ export default {
             filtered_headers: headers_with_filters,
             hideFooter: this.rows_per_page_options == null,
             rowsPerPageOptions: (this.rows_per_page_options == null) ? [] : this.rows_per_page_options,
+            pageResetFlag: 1,
+            searchDebounced: null,
             // refreshKey: 0, // just used to force computed values to refresh when needed
         }
     },
@@ -101,17 +104,29 @@ export default {
                 if (h.filter == 'distinct' && h.filterValue !== null) {
                     result.push({
                         field: h.value,
-                        comparison: '=',
+                        comparison: (value, criteria) => {
+                            try {
+                                return value == criteria;
+                            } catch (e) {
+                                return false;
+                            }
+                        },
                         criteria: h.filterValue
                     });
                 }
-                if (h.filter == 'text' && h.filterValue !== null && h.filterValue.trim() !== "") {
+                if (h.filter == 'text' && h.filterValue !== null && String(h.filterValue).trim() !== "") {
                     result.push({
                         field: h.value,
                         comparison: (value, criteria) => {
-                            var compareValue = (criteria.toLowerCase() == criteria) ? (value || "").toLowerCase() : value;
-                            return compareValue != null && criteria != null &&
-                                typeof compareValue === 'string' && compareValue.includes(criteria.trim())
+                            try {
+                                if (typeof criteria !== "string") { criteria = String(criteria); }
+                                const shortCriteria = criteria.trim();
+                                const searchableValue = value == null ? "" : String(value);
+                                const compareValue = shortCriteria.toLowerCase() === shortCriteria ? searchableValue.toLowerCase() : searchableValue;
+                                return compareValue.includes(shortCriteria);
+                            } catch (e) {
+                                return false;
+                            }
                         },
                         criteria: h.filterValue,
                     });
@@ -122,21 +137,29 @@ export default {
                     result.push({
                         field: h.value,
                         comparison: (value, criteria) => {
-                            var numValue = parseFloat(value);
-                            if (isNaN(numValue)) return false;
-                            if (min !== null && numValue < min) return false;
-                            if (max !== null && numValue > max) return false;
-                            return true;
+                            try {
+                                var numValue = parseFloat(value);
+                                if (isNaN(numValue)) return false;
+                                if (min !== null && numValue < min) return false;
+                                if (max !== null && numValue > max) return false;
+                                return true;
+                            } catch (e) {
+                                return false;
+                            }
                         },
                         criteria: h.filterValue,
                     });
                 }
-                if (h.filter == 'distinctMulti' && h.filterValue !== null && h.filterValue.trim() !== "") {
-                    var options = new Set(h.filterValue.split('\x00'));
+                if (h.filter == 'distinctMulti' && h.filterValue !== null && String(h.filterValue).trim() !== "") {
+                    var options = new Set(String(h.filterValue).split('\x00'));
                     result.push({
                         field: h.value,
                         comparison: (value, criteria) => {
-                            return options.has(value);
+                            try {
+                                return options.has(value);
+                            } catch (e) {
+                                return false;
+                            }
                         },
                         criteria: h.filterValue,
                     });
@@ -149,20 +172,28 @@ export default {
         console.debug('QuickFilterTable app created.')
         console.debug('Columns:', this.used_headers)
         console.debug('Items:', this.items)
+        this.searchDebounced = debounce(() => {
+            if (this.searchValue.trim() === "") {
+                this.working_items = this.all_items;
+                this.pageResetFlag += 1; // reset to first page when search changes
+                return;
+            }
+            console.debug("Performing fuzzy search for:", this.searchValue.trim(), "in", this.all_items, "fields:", this.header_names);
+            var search_results = fuzzyFilter(this.all_items, this.searchValue.trim(), { fields: this.header_names })
+            console.debug("Fuzzy search results:", search_results);
+            this.working_items = search_results.filter(r => r.score > 0).map(r => r.item);
+            this.pageResetFlag += 1; // reset to first page when search changes
+            console.debug("Updated items:", this.working_items);
+        }, 300);
+    },
+    beforeUnmount() {
+        if (this.searchDebounced && typeof this.searchDebounced.cancel === "function") {
+            this.searchDebounced.cancel();
+        }
     },
     methods: {
         update_search() {
-            debounce(() => {
-                if (this.searchValue.trim() === "") {
-                    this.working_items = this.all_items;
-                    return;
-                }
-                console.debug("Performing fuzzy search for:", this.searchValue.trim(), "in", this.all_items, "fields:", this.header_names);
-                var search_results = fuzzyFilter(this.all_items, this.searchValue.trim(), { fields: this.header_names })
-                console.debug("Fuzzy search results:", search_results);
-                this.working_items = search_results.filter(r => r.score > 0).map(r => r.item);
-                console.debug("Updated items:", this.working_items);
-            }, 300)();
+            this.searchDebounced();
         },
         clear_search() {
             this.searchValue = "";
@@ -172,8 +203,7 @@ export default {
             } catch (e) { }
         },
         focusChanged(event) {
-            var el = event.target;
-            this.searchFocused = el == this.$refs.search;
+            this.searchFocused = event.type === 'focus';
         },
         update_filter(header, value) {
             console.debug("Updating filter for header:", header, "with value:", value);
