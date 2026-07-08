@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added Jest test infrastructure and new test work in progress (`copilot: setup tests`, `copilot: tests`, and follow-up overhaul).
 - Updated package version metadata after `1.1.3` (`update version number`).
 - Make changing search value reset the current page to 1
+- Fix issue where non-string, truthy values caused text filter to error.
 
 ## [1.1.3] - 2026-03-21
 
