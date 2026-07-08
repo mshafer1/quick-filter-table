@@ -119,9 +119,10 @@ export default {
                         comparison: (value, criteria) => {
                             try {
                                 if (typeof criteria !== "string") { criteria = String(criteria); }
-                                const raw = value == null ? "" : String(value);
-                                const compareValue = criteria.toLowerCase() === criteria ? raw.toLowerCase() : raw;
-                                return compareValue.includes(criteria.trim());
+                                const shortCriteria = criteria.trim();
+                                const searchableValue = value == null ? "" : String(value);
+                                const compareValue = shortCriteria.toLowerCase() === shortCriteria ? searchableValue.toLowerCase() : searchableValue;
+                                return compareValue.includes(shortCriteria);
                             } catch (e) {
                                 return false;
                             }
