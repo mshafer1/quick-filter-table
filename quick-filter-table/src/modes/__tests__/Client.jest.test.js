@@ -164,7 +164,7 @@ describe('Client.vue Component Interaction', () => {
     const searchInput = screen.getByPlaceholderText('Search...')
     await fireEvent.update(searchInput, 'Item 1')
 
-    expect(screen.getAllByRole('row')).toHaveLength(26) // full page of resulsts
+    expect(screen.getAllByRole('row')).toHaveLength(26) // full page of results
     expect(screen.getByText('Item 1')).toBeInTheDocument()
 
     expect(screen.queryByText('Item 22')).not.toBeInTheDocument()
