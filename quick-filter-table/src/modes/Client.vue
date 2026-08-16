@@ -87,6 +87,7 @@ export default {
             hideFooter: this.rows_per_page_options == null,
             rowsPerPageOptions: (this.rows_per_page_options == null) ? [] : this.rows_per_page_options,
             pageResetFlag: 1,
+            searchFuse: null,
             searchDebounced: null,
             // refreshKey: 0, // just used to force computed values to refresh when needed
         }
@@ -193,17 +194,13 @@ export default {
             }
             console.debug("Performing fuzzy search for:", this.searchValue.trim(), "in", this.all_items, "fields:", this.header_names);
 
-            const searchableKeys = this.header_names.filter(Boolean);
-            const fuse = new Fuse(this.all_items, {
-                keys: searchableKeys,
-                includeScore: true,
-                threshold: 0.30, // 0 is strict, 1 is match anything.
-                useTokenSearch: true,
-                ignoreLocation: true,
-                shouldSort: true,
-                findAllMatches: true,
-            });
-            const search_results = fuse.search(this.searchValue.trim());
+            if (this.searchFuse == null) {
+                this.working_items = this.all_items;
+                this.pageResetFlag += 1;
+                return;
+            }
+
+            const search_results = this.searchFuse.search(this.searchValue.trim());
             console.debug("Fuzzy search results:", search_results);
             this.working_items = search_results.filter(r => r.score !== undefined).map(r => r.item);
             this.pageResetFlag += 1; // reset to first page when search changes
@@ -216,6 +213,18 @@ export default {
         }
     },
     methods: {
+        rebuildSearchFuse(items) {
+            const searchableKeys = this.header_names.filter(Boolean);
+            this.searchFuse = new Fuse(items, {
+                keys: searchableKeys,
+                includeScore: true,
+                threshold: 0.30, // 0 is strict, 1 is match anything.
+                useTokenSearch: true,
+                ignoreLocation: true,
+                shouldSort: true,
+                findAllMatches: true,
+            });
+        },
         update_search() {
             this.searchDebounced();
         },
@@ -240,10 +249,14 @@ export default {
         }
     },
     watch: {
-        items(newItems) {
-            this.all_items = newItems;
-            this.working_items = newItems;
-            this.clear_search();
+        items: {
+            immediate: true,
+            handler(newItems) {
+                this.all_items = Array.isArray(newItems) ? newItems : [];
+                this.working_items = this.all_items;
+                this.rebuildSearchFuse(this.all_items);
+                this.clear_search();
+            }
         }
     }
 }
