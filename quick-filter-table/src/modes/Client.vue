@@ -185,7 +185,8 @@ export default {
             const fuse = new Fuse(this.all_items, {
                 keys: searchableKeys,
                 includeScore: true,
-                threshold: 0.15,
+                threshold: 0.30, // 0 is strict, 1 is match anything.
+                useTokenSearch: true,
                 ignoreLocation: true,
                 shouldSort: true,
                 findAllMatches: true,
