@@ -79,6 +79,10 @@ describe('Client.vue Component Interaction', () => {
     expect(searchInput).toHaveValue('')
   })
 
+  test('requires the fuse.js library for fuzzy search', () => {
+    expect(() => require.resolve('fuse.js')).not.toThrow()
+  })
+
   test('uses hidden footer config when rows_per_page_options is null', () => {
     renderClient({ rows_per_page_options: null })
 

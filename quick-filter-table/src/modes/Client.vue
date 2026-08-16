@@ -43,7 +43,7 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
 </template>
 
 <script>
-import { fuzzyFilter } from "fuzzbunny";
+import Fuse from 'fuse.js';
 import debounce from 'lodash/debounce';
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
@@ -134,6 +134,7 @@ export default {
                 if (h.filter == 'numberRange' && h.filterValue !== null && (h.filterValue[0] !== null || h.filterValue[1] !== null)) {
                     var min = h.filterValue[0]
                     var max = h.filterValue[1]
+                    // TODO: if min and max are true min and max, then don't filter at all (or remove the filter from the list)
                     result.push({
                         field: h.value,
                         comparison: (value, criteria) => {
@@ -179,9 +180,19 @@ export default {
                 return;
             }
             console.debug("Performing fuzzy search for:", this.searchValue.trim(), "in", this.all_items, "fields:", this.header_names);
-            var search_results = fuzzyFilter(this.all_items, this.searchValue.trim(), { fields: this.header_names })
+
+            const searchableKeys = this.header_names.filter(Boolean);
+            const fuse = new Fuse(this.all_items, {
+                keys: searchableKeys,
+                includeScore: true,
+                threshold: 0.15,
+                ignoreLocation: true,
+                shouldSort: true,
+                findAllMatches: true,
+            });
+            const search_results = fuse.search(this.searchValue.trim());
             console.debug("Fuzzy search results:", search_results);
-            this.working_items = search_results.filter(r => r.score > 0).map(r => r.item);
+            this.working_items = search_results.filter(r => r.score !== undefined).map(r => r.item);
             this.pageResetFlag += 1; // reset to first page when search changes
             console.debug("Updated items:", this.working_items);
         }, 300);
