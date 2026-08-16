@@ -214,6 +214,22 @@ describe('Client.vue Component Interaction', () => {
     expect(screen.getByText('Cara')).toBeInTheDocument()
   })
 
+  test('number range filter is ignored when it covers the full column range', () => {
+    const numberHeader = {
+      text: 'Score',
+      value: 'score',
+      filter: 'numberRange',
+      filterValue: [1, 5],
+    }
+
+    const filterOptions = Client.computed.filterOptions.call({
+      all_items: [{ score: 1 }, { score: 2 }, { score: 3 }, { score: 5 }, { score: 4}, {score: null}],
+      filtered_headers: [numberHeader],
+    })
+
+    expect(filterOptions).toEqual([])
+  })
+
   test('text filter comparison succeeds even when value is truthy non-string and criteria is lowercase', () => {
     const textHeader = {
       text: 'Score',

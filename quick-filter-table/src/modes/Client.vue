@@ -132,9 +132,21 @@ export default {
                     });
                 }
                 if (h.filter == 'numberRange' && h.filterValue !== null && (h.filterValue[0] !== null || h.filterValue[1] !== null)) {
-                    var min = h.filterValue[0]
-                    var max = h.filterValue[1]
-                    // TODO: if min and max are true min and max, then don't filter at all (or remove the filter from the list)
+                    const rangeValues = Array.isArray(this.all_items)
+                        ? this.all_items
+                            .map(item => parseFloat(item?.[h.value]))
+                            .filter(value => typeof value === 'number' && !isNaN(value))
+                        : [];
+                    const columnMin = rangeValues.length ? Math.min(...rangeValues) : null;
+                    const columnMax = rangeValues.length ? Math.max(...rangeValues) : null;
+                    const min = h.filterValue[0] == null ? null : parseFloat(h.filterValue[0]);
+                    const max = h.filterValue[1] == null ? null : parseFloat(h.filterValue[1]);
+                    const isFullRange = columnMin !== null && columnMax !== null && min === columnMin && max === columnMax;
+
+                    if (isFullRange) {
+                        return;
+                    }
+
                     result.push({
                         field: h.value,
                         comparison: (value, criteria) => {
