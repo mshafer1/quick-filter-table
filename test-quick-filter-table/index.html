@@ -42,11 +42,12 @@
                 rows_per_page_options: null,
                 items_map: function (item) {
                     item.name = `${item.last_name}, ${item.first_name}`
+                    item.numericNull = (item.age > 30) ? null : item.age
                     return item
                 },
                 headers: [
                     { text: "Name", value: "name", filter: "distinct" },
-                    { text: "Age", value: "age", filter: "numberRange" },
+                    { text: "Age", value: "numericNull", filter: "numberRange" },
                     { text: "City", value: "city", filter: "distinctMulti" },
                 ],
             });
