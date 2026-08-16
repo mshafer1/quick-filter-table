@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- Change fuzzy search to `fuse.js` to improve handling complex types
+
+## [1.1.5] - 2026-08-015
+- Change fuzzy search to `fuse.js` to improve handling complex types (#65)
 
 ## [1.1.4] - 2026-07-08
 
@@ -63,7 +65,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - First full published release.
 
-[Unreleased]: https://github.com/mshafer1/quick-filter-table/compare/1.1.4...main
+[Unreleased]: https://github.com/mshafer1/quick-filter-table/compare/1.1.5...main
+[1.1.5]: https://github.com/mshafer1/quick-filter-table/compare/1.1.4...1.1.5
 [1.1.4]: https://github.com/mshafer1/quick-filter-table/compare/1.1.3...1.1.4
 [1.1.3]: https://github.com/mshafer1/quick-filter-table/compare/1.1.2...1.1.3
 [1.1.2]: https://github.com/mshafer1/quick-filter-table/compare/1.1.1...1.1.2
