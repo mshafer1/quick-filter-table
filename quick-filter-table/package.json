@@ -1,6 +1,6 @@
 {
   "name": "quick-filter-table",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "type": "module",
   "browser": {
     "quick-filter-table": "./src/library.js"
