@@ -2,8 +2,6 @@
     <FilterIcon v-if="filterable" @clicked="showFilter = !showFilter" :active="active"></FilterIcon>
     {{ header.text }}
     <div v-show="filterable && showFilter" class="filter-dropdown slider-wrapper" @click.stop>
-        <!-- <input type="range" class="form-control-range" v-model="value" :min="minValue" :max="maxValue"
-            @input="update_filter" /> -->
         <div ref="_sliderElement"></div>
     </div>
 </template>
@@ -21,7 +19,14 @@ export default {
     props: ['header', 'all_values'],
     emits: ['update-filter'],
     data: function () {
-        var sorted = this.all_values.map((x) => { return parseFloat(x) }).filter((x) => { return x != NaN }).sort();
+        const sorted = this.all_values
+            .map((value) => {
+                if (value === null || value === undefined) return null;
+                const n = Number(String(value).trim());
+                return Number.isFinite(n) ? n : null;
+            })
+            .filter((value) => value !== null)
+            .sort((a, b) => a - b);
 
         var uniqueValues = sortedUniq(sorted);
         return {

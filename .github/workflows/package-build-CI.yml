@@ -7,7 +7,7 @@ on:
   push:
     branches: ["main"]
     paths-ignore:
-      - 'docs/**'
+      - "docs/**"
   pull_request:
     branches: ["main"]
 
@@ -52,6 +52,8 @@ jobs:
           name: ci-build-output
           path: quick-filter-table/dist/ # The path to the file or directory to upload
       - name: Add the build to the repo
+        # when not a PR
+        if: github.event_name != 'pull_request'
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"

@@ -43,7 +43,7 @@ import Vue3EasyDataTable from 'vue3-easy-data-table';
 </template>
 
 <script>
-import { fuzzyFilter } from "fuzzbunny";
+import Fuse from 'fuse.js';
 import debounce from 'lodash/debounce';
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
@@ -53,6 +53,23 @@ import DistinctFilter from '@/components/distinctFilter.vue';
 import MultiDistinctFilter from '@/components/multiDistinctFilter.vue';
 import NumberRangeFilter from '@/components/numberRangeFilter.vue';
 import TextFilter from '@/components/textFilter.vue';
+
+function getMinMax(values) {
+    // Avoid spreading large arrays into Math.min/Math.max, which can exceed engine argument limits.
+    if (!Array.isArray(values) || values.length === 0) {
+        return { min: null, max: null };
+    }
+
+    let min = values[0];
+    let max = values[0];
+    for (let i = 1; i < values.length; i += 1) {
+        const value = values[i];
+        if (value < min) min = value;
+        if (value > max) max = value;
+    }
+
+    return { min, max };
+}
 
 export default {
     name: 'ClientMode',
@@ -87,6 +104,7 @@ export default {
             hideFooter: this.rows_per_page_options == null,
             rowsPerPageOptions: (this.rows_per_page_options == null) ? [] : this.rows_per_page_options,
             pageResetFlag: 1,
+            searchFuse: null,
             searchDebounced: null,
             // refreshKey: 0, // just used to force computed values to refresh when needed
         }
@@ -132,8 +150,20 @@ export default {
                     });
                 }
                 if (h.filter == 'numberRange' && h.filterValue !== null && (h.filterValue[0] !== null || h.filterValue[1] !== null)) {
-                    var min = h.filterValue[0]
-                    var max = h.filterValue[1]
+                    const rangeValues = Array.isArray(this.all_items)
+                        ? this.all_items
+                            .map(item => parseFloat(item?.[h.value]))
+                            .filter(value => typeof value === 'number' && !isNaN(value))
+                        : [];
+                    const { min: columnMin, max: columnMax } = getMinMax(rangeValues);
+                    const min = h.filterValue[0] == null ? null : parseFloat(h.filterValue[0]);
+                    const max = h.filterValue[1] == null ? null : parseFloat(h.filterValue[1]);
+                    const isFullRange = columnMin !== null && columnMax !== null && min === columnMin && max === columnMax;
+
+                    if (isFullRange) {
+                        return;
+                    }
+
                     result.push({
                         field: h.value,
                         comparison: (value, criteria) => {
@@ -179,9 +209,16 @@ export default {
                 return;
             }
             console.debug("Performing fuzzy search for:", this.searchValue.trim(), "in", this.all_items, "fields:", this.header_names);
-            var search_results = fuzzyFilter(this.all_items, this.searchValue.trim(), { fields: this.header_names })
+
+            if (this.searchFuse == null) {
+                this.working_items = this.all_items;
+                this.pageResetFlag += 1;
+                return;
+            }
+
+            const search_results = this.searchFuse.search(this.searchValue.trim());
             console.debug("Fuzzy search results:", search_results);
-            this.working_items = search_results.filter(r => r.score > 0).map(r => r.item);
+            this.working_items = search_results.filter(r => r.score !== undefined).map(r => r.item);
             this.pageResetFlag += 1; // reset to first page when search changes
             console.debug("Updated items:", this.working_items);
         }, 300);
@@ -192,6 +229,18 @@ export default {
         }
     },
     methods: {
+        rebuildSearchFuse(items) {
+            const searchableKeys = this.header_names.filter(Boolean);
+            this.searchFuse = new Fuse(items, {
+                keys: searchableKeys,
+                includeScore: true,
+                threshold: 0.30, // 0 is strict, 1 is match anything.
+                useTokenSearch: true,
+                ignoreLocation: true,
+                shouldSort: true,
+                findAllMatches: true,
+            });
+        },
         update_search() {
             this.searchDebounced();
         },
@@ -216,10 +265,14 @@ export default {
         }
     },
     watch: {
-        items(newItems) {
-            this.all_items = newItems;
-            this.working_items = newItems;
-            this.clear_search();
+        items: {
+            immediate: true,
+            handler(newItems) {
+                this.all_items = Array.isArray(newItems) ? newItems : [];
+                this.working_items = this.all_items;
+                this.rebuildSearchFuse(this.all_items);
+                this.clear_search();
+            }
         }
     }
 }
