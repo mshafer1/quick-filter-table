@@ -54,6 +54,23 @@ import MultiDistinctFilter from '@/components/multiDistinctFilter.vue';
 import NumberRangeFilter from '@/components/numberRangeFilter.vue';
 import TextFilter from '@/components/textFilter.vue';
 
+function getMinMax(values) {
+    // Avoid spreading large arrays into Math.min/Math.max, which can exceed engine argument limits.
+    if (!Array.isArray(values) || values.length === 0) {
+        return { min: null, max: null };
+    }
+
+    let min = values[0];
+    let max = values[0];
+    for (let i = 1; i < values.length; i += 1) {
+        const value = values[i];
+        if (value < min) min = value;
+        if (value > max) max = value;
+    }
+
+    return { min, max };
+}
+
 export default {
     name: 'ClientMode',
     components: {
@@ -138,8 +155,7 @@ export default {
                             .map(item => parseFloat(item?.[h.value]))
                             .filter(value => typeof value === 'number' && !isNaN(value))
                         : [];
-                    const columnMin = rangeValues.length ? Math.min(...rangeValues) : null;
-                    const columnMax = rangeValues.length ? Math.max(...rangeValues) : null;
+                    const { min: columnMin, max: columnMax } = getMinMax(rangeValues);
                     const min = h.filterValue[0] == null ? null : parseFloat(h.filterValue[0]);
                     const max = h.filterValue[1] == null ? null : parseFloat(h.filterValue[1]);
                     const isFullRange = columnMin !== null && columnMax !== null && min === columnMin && max === columnMax;
