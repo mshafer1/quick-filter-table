@@ -19,7 +19,14 @@ export default {
     props: ['header', 'all_values'],
     emits: ['update-filter'],
     data: function () {
-        var sorted = this.all_values.map((x) => { return parseFloat(x) }).filter((x) => { return !(typeof x === 'boolean' || x === '' || isNaN(x)) }).sort();
+        const sorted = this.all_values
+            .map((value) => {
+                if (value === null || value === undefined) return null;
+                const n = Number(String(value).trim());
+                return Number.isFinite(n) ? n : null;
+            })
+            .filter((value) => value !== null)
+            .sort((a, b) => a - b);
 
         var uniqueValues = sortedUniq(sorted);
         return {
