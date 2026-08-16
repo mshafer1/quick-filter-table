@@ -26,6 +26,7 @@ const defaultItems = [
 const longItems = Array.from({ length: 100 }, (_, i) => ({
   name: `Item ${i + 1}`,
   status: i % 2 === 0 ? 'active' : 'inactive',
+  number: i + 1,
 }))
 
 function renderClient(overrides = {}) {
@@ -128,28 +129,6 @@ describe('Client.vue Component Interaction', () => {
     expect(screen.getAllByRole('row')).toHaveLength(5) // 1 header row + 4 data rows
   })
 
-  //   test('resets search when items prop changes', async () => {
-  //     const { rerender } = renderClient()
-
-  //     const searchInput = screen.getByPlaceholderText('Search...')
-  //     await fireEvent.update(searchInput, 'Alpha')
-
-  //     expect(searchInput).toHaveValue('Alpha')
-
-  //     const newItems = [{ name: 'Delta', status: 'inactive' }]
-  //     await rerender({
-  //       headers: defaultHeaders,
-  //       items: newItems,
-  //       loaded: true,
-  //       default_rows_per_page: 25,
-  //       rows_per_page_options: [25, 50, 100],
-  //     })
-
-  //     expect(searchInput).toHaveValue('')
-  //     expect(screen.getByTestId('item-count')).toHaveTextContent('1')
-  //     expect(screen.getByText('Delta')).toBeInTheDocument()
-  //   })
-
   test('default rows per page', async () => {
     renderClient({ items: longItems, default_rows_per_page: 25 })
     expect(screen.getAllByRole('row')).toHaveLength(26) // 1 header row + 25 data rows
@@ -195,29 +174,31 @@ describe('Client.vue Component Interaction', () => {
     expect(screen.getByText('Item 1')).toBeInTheDocument()
   })
 
-  test('Searching large dataset with null and numbers does not throw errors', async () => {
-    const largeItems = Array.from({ length: 1000 }, (_, i) => ({
-      name: `Item ${i + 1}`,
-      status: i % 2 === 0 ? 'active' : 'inactive',
-      value: i % 5, // integers
-      count_me_in: i % 3 === 0 ? null : i % 2 === 0, // nulls and booleans
-      html: `<div>Item - ${i + 1}</div>`, // HTML content
-    }))
-
+  test('Searching mixed-type columns does not crash fuzzy sort', async () => {
+    const complexItems = [
+      { id: 1, name: 'Alice', score: 1, active: null },
+      { id: 2, name: 'Bran', score: 2, active: { state: 'on Fridays' } },
+      { id: 3, name: 'Cara', score: 'N/A', active: null },
+      { id: 4, name: 'Drew', score: 4, active: { state: 'always' } },
+      { id: 5, name: 'Evan', score: 5, active: null },
+      { id: 4, name: 'Felix', score: null, active: { state: 'always' } },
+    ]
     renderClient({
-      items: largeItems,
+      items: complexItems,
       headers: [
-        { text: 'Name', value: 'name', filter: null },
-        { text: 'Status', value: 'status', filter: 'distinct' },
-        { text: 'Value', value: 'value', filter: null },
-        { text: 'Count Me In', value: 'count_me_in', filter: null },
-        { text: 'HTML', value: 'html', filter: null, html: true },
+        { text: 'ID', value: 'id', filter: 'distinct' },
+        { text: 'Name', value: 'name', filter: 'text' },
+        { text: 'Score', value: 'score', filter: 'numberRange' },
+        { text: 'Active', value: 'active', filter: 'distinct' },
+        { text: 'Tags', value: 'tags', filter: 'distinct' },
       ],
     })
 
     const searchInput = screen.getByPlaceholderText('Search...')
-    await fireEvent.update(searchInput, 'Item 10')
-    expect(screen.getByText('Item 10')).toBeInTheDocument()
+    await fireEvent.update(searchInput, 'a')
+
+    expect(screen.getByText('Alice')).toBeInTheDocument()
+    expect(screen.getByText('Cara')).toBeInTheDocument()
   })
 
   test('text filter comparison succeeds even when value is truthy non-string and criteria is lowercase', () => {
