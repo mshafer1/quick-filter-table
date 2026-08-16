@@ -9,7 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [1.1.6] - 2026-08-015
+
+### Changed
+
+No changes, just build package again due to release flow
+
 ## [1.1.5] - 2026-08-015
+
+### Changed
+
 - Change fuzzy search to `fuse.js` to improve handling complex types (#65)
 
 ## [1.1.4] - 2026-07-08
