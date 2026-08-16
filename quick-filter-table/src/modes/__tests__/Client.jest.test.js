@@ -178,7 +178,7 @@ describe('Client.vue Component Interaction', () => {
     await fireEvent.click(nextPageButton) // Move to page 2, validated in previous test
 
     await fireEvent.update(searchInput, 'Item 1') // set search again
-    expect(screen.getAllByRole('row')).toHaveLength(26) // 1 header row + 1 data row
+    expect(screen.getAllByRole('row')).toHaveLength(26) // full page
     expect(screen.getByText('Item 1')).toBeInTheDocument()
 
     // set it to a smaller match
