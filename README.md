@@ -9,10 +9,10 @@ A quick data-table viewer tool (with filtering/sorting enabled)
 Load the CSS and JS files:
 
 ```
-<link href="https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.5/quick-filter-table/dist/quick-filter-table.css"
+<link href="https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.6/quick-filter-table/dist/quick-filter-table.css"
     rel="stylesheet" />
 <script
-    src="https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.5/quick-filter-table/dist/quick-filter-table.js"></script>
+    src="https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.6/quick-filter-table/dist/quick-filter-table.js"></script>
 ```
 
 (full example)
@@ -26,10 +26,10 @@ Load the CSS and JS files:
     <title>Test quick filter table</title>
     <!-- Load stylesheets and library -->
     <link
-      href="https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.5/quick-filter-table/dist/quick-filter-table.css"
+      href="https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.6/quick-filter-table/dist/quick-filter-table.css"
       rel="stylesheet"
     />
-    <script src="https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.5/quick-filter-table/dist/quick-filter-table.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mshafer1/quick-filter-table@1.1.6/quick-filter-table/dist/quick-filter-table.js"></script>
     <script>
       function init() {
         QuickFilterTable.renderApp("app1", {
