@@ -223,7 +223,14 @@ describe('Client.vue Component Interaction', () => {
     }
 
     const filterOptions = Client.computed.filterOptions.call({
-      all_items: [{ score: 1 }, { score: 2 }, { score: 3 }, { score: 5 }, { score: 4}, {score: null}],
+      all_items: [
+        { score: 1 },
+        { score: 2 },
+        { score: 3 },
+        { score: 5 },
+        { score: 4 },
+        { score: null },
+      ],
       filtered_headers: [numberHeader],
     })
 
